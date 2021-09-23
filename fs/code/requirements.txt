@@ -1,0 +1,3 @@
+setuptools
+wheel
+std2@https://github.com/ms-jpq/std2/archive/3a4d287e1b813fd351728b7d7ff54c3e2ba7c238.tar.gz
