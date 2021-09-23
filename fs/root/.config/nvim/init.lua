@@ -1,0 +1,13 @@
+TIMER = {}
+
+local acc = {}
+
+TIMER.done = function()
+  local span = vim.loop.now() - TIMER.mark
+  table.insert(acc, span)
+end
+
+TIMER.on_exit = function()
+  local json = vim.fn.json_encode(acc)
+  vim.fn.writefile({json}, vim.env.JSON_OUTPUT)
+end
