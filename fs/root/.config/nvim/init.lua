@@ -1,3 +1,5 @@
+print(vim.env.TST_FRAMEWORK .. " >>> " .. vim.env.TST_METHOD)
+
 TIMER = {}
 
 local acc = {}

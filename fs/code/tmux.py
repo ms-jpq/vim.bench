@@ -3,7 +3,6 @@ from itertools import chain, repeat
 from os import environ
 from os.path import normcase
 from pathlib import Path
-from shutil import copy2
 from subprocess import CalledProcessError
 from tempfile import mkdtemp
 from typing import Iterable, Tuple
@@ -19,15 +18,23 @@ _LONG = 0.6
 
 async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
     tmp = Path(mkdtemp())
-    sock, t_in, t_out = tmp / str(uuid4()), tmp / str(uuid4()), tmp / str(uuid4())
-    copy2(inst.test_file, t_in)
+    sock, t_out = tmp / str(uuid4()), tmp / str(uuid4())
 
     env = {
         "TST_FRAMEWORK": inst.framework,
         "TST_METHOD": inst.method,
         "TST_OUTPUT": normcase(t_out),
     }
-    args = ("tmux", "-S", sock, "--", "new-session", "nvim", "--", normcase(t_in))
+    args = (
+        "tmux",
+        "-S",
+        sock,
+        "--",
+        "new-session",
+        "nvim",
+        "--",
+        normcase(inst.test_file),
+    )
     proc = await create_subprocess_exec(*args, cwd=inst.cwd, env={**environ, **env})
 
     await sleep(_LONG)
@@ -75,5 +82,5 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
 
     if (code := await proc.wait()) != 0:
         raise CalledProcessError(returncode=code, cmd=args)
-
-    return t_out
+    else:
+        return t_out
