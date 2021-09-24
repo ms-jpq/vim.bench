@@ -22,7 +22,7 @@ def _quantiles(data: Iterable[float], *quantiles: int) -> Mapping[int, float]:
 
 def stats(sample: Sequence[float]) -> Stats:
     mean, std = fmean(sample), stdev(sample)
-    quantiles = _quantiles(sample)
+    quantiles = _quantiles(sample, 0, 50, 95, 100)
     stats = Stats(
         mean=mean,
         std=std,
