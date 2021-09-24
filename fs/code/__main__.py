@@ -1,38 +1,80 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
-from itertools import chain, islice
+from dataclasses import dataclass
+from itertools import chain, islice, product
+from os import linesep
+from os.path import normcase, sep
 from pathlib import Path
-from posixpath import normcase
 from random import choice, uniform
-from string import printable
 from sys import exit
+from tempfile import NamedTemporaryFile
+from typing import Iterator, Sequence, Tuple
+
+from std2.pickle import new_decoder
 
 from .tmux import tmux
 
-_POOL = printable + " " * 10
+_DATA = Path(sep) / "data"
+_BUFFERS = _DATA / "buffers"
+
+
+@dataclass(frozen=True)
+class _Parsed:
+    text: str
+    total: int
+    unique: int
+    gen: Iterator[str]
+
+
+_FRAMEWORKS = {"coq", "coc", "cmp"}
+_TESTS = {*_BUFFERS.iterdir()}
+
+
+def _tokenize(path: Path) -> _Parsed:
+    text = path.read_text()
+    lines = text.splitlines()
+    tot = tuple(chain.from_iterable(line.split() for line in lines))
+    uniq = {*tot}
+    ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
+    gen = iter(lambda: choice(tot) + choice(ws), None)
+
+    parsed = _Parsed(text=text, total=len(tot), unique=len(uniq), gen=gen)
+    return parsed
 
 
 def _parse_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument("--lo", type=float, required=True)
     parser.add_argument("--hi", type=float, required=True)
+    parser.add_argument("--tokens", type=int, required=True)
     parser.add_argument("--reps", type=int, required=True)
-    parser.add_argument("--json", type=Path)
 
     return parser.parse_args()
 
 
 async def main() -> int:
     args = _parse_args()
-    gen = zip(
-        iter(lambda: uniform(args.lo, args.hi), None),
-        chain("i", iter(lambda: choice(_POOL), None)),
-    )
-    feed = islice(gen, args.reps)
-    env = {"JSON_OUTPUT": normcase(args.json)}
+    time_gen = iter(lambda: uniform(args.lo, args.hi), None)
+    decode = new_decoder[Sequence[float]](Sequence[float])
 
-    code = await tmux(Path(), env=env, feed=feed)
-    return code
+    async def cont() -> Tuple[_Parsed, Sequence[float]]:
+        for framework, path in product(_FRAMEWORKS, _TESTS):
+            with NamedTemporaryFile(mode="w", delete=False) as fd:
+                tmp = Path(fd.name)
+                parsed = _tokenize(path)
+                fd.write(parsed.text)
+
+            feed = islice(zip(time_gen, chain("goi", parsed.gen)), args.tokens)
+            env = {
+                "COMPLETION_FRAMEWORK": framework,
+                "JSON_OUTPUT": normcase(tmp),
+            }
+            await tmux(Path(), env=env, document=tmp, feed=feed)
+            json = tmp.read_text()
+            decoded = decode(json)
+            yield parsed, decoded
+
+    return 0
 
 
 if __name__ == "__main__":
