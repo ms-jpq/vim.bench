@@ -12,6 +12,7 @@ def stats(sample: Sequence[float]) -> Stats:
     mean, std = fmean(sample), stdev(sample)
     quads = quantiles(sample, 0, 50, 95, 100)
     stats = Stats(
+        items=len(sample),
         mean=mean,
         std=std,
         q0=quads[0],

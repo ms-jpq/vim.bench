@@ -1,8 +1,9 @@
 from asyncio import gather, run
 from os.path import sep
-from pathlib import Path, PurePath
+from pathlib import Path, PurePosixPath
 from sys import executable, exit
 from typing import Optional
+from urllib.parse import urlparse
 
 from std2.asyncio.subprocess import call
 
@@ -12,19 +13,30 @@ _PACK_START = _PACK_HOME / "start"
 _DATA_LSP = Path(sep) / "data" / "lsp"
 
 
-async def _git(cwd: PurePath, uri: str, branch: Optional[str] = None) -> None:
-    await call(
-        "git",
-        "clone",
-        "--depth",
-        "1",
-        *(("--branch", branch) if branch else ()),
-        "--",
-        uri,
-        cwd=cwd,
-        capture_stderr=False,
-        capture_stdout=False,
-    )
+async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
+    location = cwd / PurePosixPath(urlparse(uri).path).name
+    if location.exists():
+        await call(
+            "git",
+            "pull",
+            *(("origin", branch) if branch else ()),
+            cwd=location,
+            capture_stderr=False,
+            capture_stdout=False,
+        )
+    else:
+        await call(
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            *(("--branch", branch) if branch else ()),
+            "--",
+            uri,
+            cwd=cwd,
+            capture_stderr=False,
+            capture_stdout=False,
+        )
 
 
 async def _pack(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:

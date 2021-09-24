@@ -12,6 +12,7 @@ class Instruction:
 
 @dataclass(frozen=True)
 class Stats:
+    items: int
     mean: float
     std: float
     q0: float

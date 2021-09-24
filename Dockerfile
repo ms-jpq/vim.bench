@@ -29,7 +29,9 @@ WORKDIR /code
 COPY ./fs/code/requirements.txt /code/
 RUN pip3 install --requirement /code/requirements.txt
 COPY ./fs/code/prep /code/prep
-RUN python3 -m prep
+RUN --mount=type=cache,target=/data \
+    --mount=type=cache,target=/root/nvim/pack \
+    python3 -m prep
 
 
 COPY ./fs /
