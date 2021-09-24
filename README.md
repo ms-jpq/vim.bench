@@ -6,15 +6,25 @@ Automated reproducible completion framework benchmarking suite for nvim.
 
 ## Methodology
 
-It uses `tmux` to send keys at a randomized regular intervals to simulate ideal human typing.
+### Input
 
-The input tokens are _naive_, they are just the text of the current buffer parsed into whitespace delimited tokens.
+`tmux` is used to send keys to simulate ideal human typing.
 
-This is to ensure there is always some matches possible for the vast majority of input.
+The words typed are _naive tokens_ from parsing current document into alphanum + "\_" delimited by whitespaces and symbols.
+
+This should work fairly well for **c family** of languages, which are widely used.
 
 The distribution of spaces and lineseps is also generated from the same buffer.
 
+### Measurement
+
 Time lapse between latest keypress and completion event is measured and stored.
+
+n `--samples=n` is taken.
+
+### Speed
+
+Assuming `--avg-word-len=9` and `--wpm=99`, a persecond input rate is calculated with `--variance=0.15`.
 
 ## Data set?
 

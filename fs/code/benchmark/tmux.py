@@ -9,6 +9,7 @@ from typing import Iterable, Tuple
 from uuid import uuid4
 
 from std2.asyncio.subprocess import call
+from std2.timeit import timeit
 
 from .types import Instruction
 
@@ -45,18 +46,19 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
             await sleep(0)
 
     for delay, chars in chain(zip(repeat(_SHORT), "Goi"), feed):
-        await call(
-            "tmux",
-            "-S",
-            sock,
-            "--",
-            "load-buffer",
-            "-",
-            capture_stderr=False,
-            capture_stdout=False,
-            stdin=chars.encode(),
-        )
-        await sleep(delay)
+        with timeit() as t:
+            await call(
+                "tmux",
+                "-S",
+                sock,
+                "--",
+                "load-buffer",
+                "-",
+                capture_stderr=False,
+                capture_stdout=False,
+                stdin=chars.encode(),
+            )
+        await sleep(delay - t())
         await call(
             "tmux",
             "-S",

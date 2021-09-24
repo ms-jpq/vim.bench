@@ -11,8 +11,8 @@ from .benchmarks import benchmarks as bench
 def _parse_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument("--samples", type=int, default=666)
-    parser.add_argument("--wpm", type=int, default=88)
-    parser.add_argument("--avg-word-len", type=int, default=5)
+    parser.add_argument("--wpm", type=int, default=99)
+    parser.add_argument("--avg-word-len", type=int, default=9)
     parser.add_argument("--variance", type=float, default=0.15)
     return parser.parse_args()
 
@@ -25,7 +25,7 @@ async def main() -> int:
 
     cwd = PurePath(getcwd())
 
-    chars_per_minute = (args.avg_word_len + 1) * args.wpm
+    chars_per_minute = args.avg_word_len * args.wpm
     chars_per_second = chars_per_minute / 60
 
     mu = 1 / chars_per_second
