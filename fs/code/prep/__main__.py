@@ -1,15 +1,10 @@
 from asyncio import gather, run
 from pathlib import Path
-from sys import exit
+from sys import executable, exit
 
 from std2.asyncio.subprocess import call
 
 _PACK = Path().home() / ".config" / "nvim" / "pack" / "modules" / "start"
-
-
-_REPOS = {
-    "https://github.com/ms-jpq/coq_nvim.git",
-}
 
 
 async def _git(uri: str) -> None:
@@ -26,9 +21,29 @@ async def _git(uri: str) -> None:
     )
 
 
+async def _coq() -> None:
+    uri = "https://github.com/ms-jpq/coq_nvim.git"
+    await _git(uri)
+    await call(
+        Path(executable).resolve(),
+        "-m",
+        "coq",
+        "deps",
+        cwd=_PACK / "coq_nvim",
+    )
+
+
+async def _coc() -> None:
+    pass
+
+
+async def _cmp() -> None:
+    pass
+
+
 async def main() -> int:
     _PACK.mkdir(parents=True, exist_ok=True)
-    await gather(*map(_git, _REPOS))
+    await gather(_coq())
 
     return 0
 
