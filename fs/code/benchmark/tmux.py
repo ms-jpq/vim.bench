@@ -45,6 +45,7 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
         else:
             await sleep(0)
 
+    t0 = 0
     for delay, chars in chain(zip(repeat(_SHORT), "Goi"), feed):
         with timeit() as t:
             await call(
@@ -58,16 +59,18 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
                 capture_stdout=False,
                 stdin=chars.encode(),
             )
-        await sleep(delay - t())
-        await call(
-            "tmux",
-            "-S",
-            sock,
-            "--",
-            "paste-buffer",
-            capture_stderr=False,
-            capture_stdout=False,
-        )
+        await sleep(delay - t0 - t())
+        with timeit() as t:
+            await call(
+                "tmux",
+                "-S",
+                sock,
+                "--",
+                "paste-buffer",
+                capture_stderr=False,
+                capture_stdout=False,
+            )
+        t0 = t()
 
     await call(
         "tmux",
