@@ -34,7 +34,7 @@ _TESTS = {
     "buf": tuple(zip((_BUFFERS,), _BUFFERS.iterdir())),
     "lsp": (
         (_LSP / "node", _LSP / "node" / "lib" / "repl.js"),
-        (_LSP / "mypy", _LSP / "mypy" / "mypy" / "checkstrformat.js"),
+        (_LSP / "mypy", _LSP / "mypy" / "mypy" / "checkstrformat.py"),
     ),
 }
 
