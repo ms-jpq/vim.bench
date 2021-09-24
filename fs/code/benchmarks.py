@@ -92,7 +92,7 @@ async def benchmarks(
 
     for inst in cartesian:
         parsed = _naive_tokenize(inst.test_file)
-        feed = islice(zip(time_gen, chain("goi", parsed.gen)), tokens)
+        feed = islice(zip(time_gen, parsed.gen), tokens)
 
         with NamedTemporaryFile(mode="w", delete=False) as fd_1, NamedTemporaryFile(
             mode="w", delete=False

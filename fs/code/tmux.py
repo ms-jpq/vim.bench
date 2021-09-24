@@ -1,4 +1,5 @@
 from asyncio import create_subprocess_exec, sleep
+from itertools import chain, repeat
 from os import environ
 from pathlib import Path, PurePath
 from subprocess import CalledProcessError
@@ -7,6 +8,9 @@ from typing import Iterable, Mapping, Tuple
 from uuid import uuid4
 
 from std2.asyncio.subprocess import call
+
+_SHORT = 0.1
+_LONG = 0.6
 
 
 async def tmux(
@@ -21,12 +25,14 @@ async def tmux(
         args = ("tmux", "-S", sock, "--", "new-session", "nvim", "--", document)
         proc = await create_subprocess_exec(*args, cwd=cwd, env={**environ, **env})
 
+        await sleep(_LONG)
         while True:
-            await sleep(0)
             if sock.exists():
                 break
+            else:
+                await sleep(0)
 
-        for delay, chars in feed:
+        for delay, chars in chain(zip(repeat(_SHORT), "goi"), feed):
             await call(
                 "tmux",
                 "-S",
