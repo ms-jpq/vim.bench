@@ -22,7 +22,7 @@ class _Args:
     samples: int
     wpm: int
     avg_word_len: int
-    variance: int
+    variance: float
 
 
 @dataclass(frozen=True)
