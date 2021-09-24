@@ -9,7 +9,7 @@ TIMER.done = function()
   table.insert(acc, span)
 end
 
-TIMER.on_exit = function()
+TIMER.fin = function()
   local json = vim.fn.json_encode(acc)
   vim.fn.writefile({json}, vim.env.TST_OUTPUT)
 end

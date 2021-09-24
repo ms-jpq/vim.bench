@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from itertools import chain, islice, product
+from json import loads
 from os import linesep
 from os.path import sep
 from pathlib import Path, PurePath
@@ -82,7 +83,7 @@ async def benchmarks(
         feed = islice(zip(time_gen, parsed.gen), chars)
 
         out = await tmux(inst, feed=feed)
-        json = out.read_text()
+        json = loads(out.read_text())
         sample = decode(json)
 
         stat = stats(sample)
