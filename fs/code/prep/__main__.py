@@ -1,18 +1,20 @@
 from asyncio import gather, run
 from pathlib import Path
 from sys import executable, exit
+from typing import Optional
 
 from std2.asyncio.subprocess import call
 
 _PACK = Path().home() / ".config" / "nvim" / "pack" / "modules" / "start"
 
 
-async def _git(uri: str) -> None:
+async def _git(uri: str, branch: Optional[str] = None) -> None:
     await call(
         "git",
         "clone",
         "--depth",
         "1",
+        *(("--branch", branch) if branch else ()),
         "--",
         uri,
         cwd=_PACK,
@@ -22,7 +24,7 @@ async def _git(uri: str) -> None:
 
 
 async def _coq() -> None:
-    uri = "https://github.com/ms-jpq/coq_nvim.git"
+    uri = "https://github.com/ms-jpq/coq_nvim"
     await _git(uri)
     await call(
         Path(executable).resolve(),
@@ -34,16 +36,23 @@ async def _coq() -> None:
 
 
 async def _coc() -> None:
-    pass
+    uri = "https://github.com/neoclide/coc.nvim"
+    await _git(uri, branch="release")
 
 
 async def _cmp() -> None:
-    pass
+    uris = {
+        "https://github.com/hrsh7th/nvim-cmp",
+        "https://github.com/hrsh7th/cmp-buffer",
+        "https://github.com/hrsh7th/cmp-nvim-lsp",
+        "https://github.com/hrsh7th/cmp-path",
+    }
+    await gather(*map(_git, uris))
 
 
 async def main() -> int:
     _PACK.mkdir(parents=True, exist_ok=True)
-    await gather(_coq())
+    await gather(_coq(), _coc(), _cmp())
 
     return 0
 

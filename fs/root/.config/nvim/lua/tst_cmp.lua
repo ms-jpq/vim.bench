@@ -1,1 +1,9 @@
-return require("tst_coq")
+return function()
+  require("cmp").setup {
+    sources = {
+      {name = "buffer"},
+      {name = "path"},
+      {name = "nvim_lsp"}
+    }
+  }
+end

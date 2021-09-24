@@ -1,1 +1,2 @@
-return require("tst_coq")
+return function()
+end

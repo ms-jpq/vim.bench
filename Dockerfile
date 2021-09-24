@@ -3,15 +3,19 @@ FROM ubuntu:focal
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --yes -- \
-    software-properties-common && \
-    add-apt-repository ppa:neovim-ppa/unstable && \
+    software-properties-common \
+    apt-transport-https \
+    curl && \
+    curl --location -- 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key' | apt-key add - && \
+    add-apt-repository ppa:neovim-ppa/unstable
+COPY ./fs/etc /etc
+RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --yes -- \
     tmux \
     neovim \
     git \
     python3-venv \
-    nodejs \
-    npm
+    nodejs
 
 
 RUN python3 -m venv /venv && \
