@@ -12,7 +12,10 @@ local acc = {}
 
 TIMER.done = function()
   local span = vim.loop.now() - TIMER.mark
-  table.insert(acc, span)
+  local info = vim.fn.complete_info()
+  if info.mode == "eval" and info.pum_visible then
+    table.insert(acc, span)
+  end
 end
 
 TIMER.fin = function()
