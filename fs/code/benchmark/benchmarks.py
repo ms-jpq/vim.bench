@@ -7,7 +7,7 @@ from os.path import sep
 from pathlib import Path, PurePath
 from random import Random, sample, shuffle
 from statistics import NormalDist
-from typing import AbstractSet, AsyncIterator, Iterator, Sequence
+from typing import AbstractSet, AsyncIterator, Iterator, MutableSequence, Sequence
 from uuid import uuid4
 
 from std2.pickle import new_decoder
@@ -63,15 +63,25 @@ def _naive_tokenize(path: Path) -> _Parsed:
     unifying = {"_"}
     text = path.read_text()
     lines = text.splitlines()
-    tot = tuple(
-        token
-        for line in lines
-        for maybe_token in line.split()
-        if (token := "".join(t for t in maybe_token if t.isalnum() or t in unifying))
-    )
+
+    def cont() -> Iterator[str]:
+        for line in lines:
+            for section in line.split():
+                acc: MutableSequence[str] = []
+                for char in section:
+                    if char.isalnum() or char in unifying:
+                        acc.append(char)
+                    else:
+                        if acc:
+                            yield "".join(acc)
+                            acc.clear()
+                if acc:
+                    yield "".join(acc)
+                    acc.clear()
+
+    tot = tuple(cont())
     uniq = {*tot}
     ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
-
     parsed = _Parsed(text=text, tot=tot, uniq=uniq, ws=ws)
     return parsed
 
