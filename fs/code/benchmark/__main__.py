@@ -2,6 +2,7 @@ from argparse import ArgumentParser, Namespace
 from asyncio import run
 from os import getcwd
 from pathlib import PurePath
+from statistics import NormalDist
 from sys import exit
 
 from .benchmarks import benchmarks as bench
@@ -9,19 +10,30 @@ from .benchmarks import benchmarks as bench
 
 def _parse_args() -> Namespace:
     parser = ArgumentParser()
-    parser.add_argument("--lo", type=float, required=True)
-    parser.add_argument("--hi", type=float, required=True)
-    parser.add_argument("--chars", type=int, required=True)
+    parser.add_argument("--samples", type=int, default=666)
+    parser.add_argument("--wpm", type=int, default=88)
+    parser.add_argument("--avg-word-len", type=int, default=5)
+    parser.add_argument("--variance", type=float, default=0.15)
     return parser.parse_args()
 
 
 async def main() -> int:
     args = _parse_args()
+    assert args.avg_word_len > 1
+    assert args.wpm > 1
+    assert args.variance > 0 and args.variance < 1
+
     cwd = PurePath(getcwd())
 
+    chars_per_minute = (args.avg_word_len + 1) * args.wpm
+    chars_per_second = chars_per_minute / 60
+
+    mu = 1 / chars_per_second
+    sigma = mu * args.variance
+    norm = NormalDist(mu=mu, sigma=sigma)
+
     benchmarks = [
-        benchmark
-        async for benchmark in bench(cwd, lo=args.lo, hi=args.hi, chars=args.chars)
+        benchmark async for benchmark in bench(cwd, norm=norm, samples=args.samples)
     ]
 
     return 0

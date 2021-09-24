@@ -32,4 +32,3 @@ COPY ./fs /
 
 
 ENTRYPOINT [ "python3", "-m", "benchmark" ]
-CMD [ "--lo", "0.005", "--hi", "0.01", "--chars", "888" ]

@@ -74,6 +74,8 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
         "--",
         "send-keys",
         "Escape",
+        "Escape",
+        "Escape",
         ":qa!",
         "Enter",
         capture_stderr=False,

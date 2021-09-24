@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from functools import lru_cache
-from itertools import chain, islice, product
+from itertools import chain, product
 from json import loads
 from os import linesep
 from os.path import sep
 from pathlib import Path, PurePath
-from random import choice, sample, shuffle, uniform
+from random import choice, sample, shuffle
+from statistics import NormalDist
 from typing import AsyncIterator, Iterator, Sequence
 
 from std2.pickle import new_decoder
@@ -72,15 +73,14 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
 
 async def benchmarks(
-    cwd: PurePath, lo: float, hi: float, chars: int
+    cwd: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
-    time_gen = iter(lambda: uniform(lo, hi), None)
     cartesian = _cartesian()
     decode = new_decoder[Sequence[float]](Sequence[float])
 
     for inst in cartesian:
         parsed = _naive_tokenize(inst.test_file)
-        feed = islice(zip(time_gen, parsed.gen), chars)
+        feed = zip(norm.samples(samples), parsed.gen)
 
         out = await tmux(inst, feed=feed)
         json = loads(out.read_text())
