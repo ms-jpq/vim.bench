@@ -2,25 +2,16 @@ from dataclasses import dataclass
 from functools import lru_cache
 from itertools import chain, islice, product
 from os import linesep
-from os.path import normcase, sep
+from os.path import sep
 from pathlib import Path, PurePath
 from random import choice, sample, shuffle, uniform
-from tempfile import NamedTemporaryFile
 from typing import AsyncIterator, Iterator, Sequence
 
 from std2.pickle import new_decoder
 
 from .stats import plot, stats
 from .tmux import tmux
-from .types import Benchmark
-
-
-@dataclass(frozen=True)
-class _Instruction:
-    framework: str
-    method: str
-    cwd: PurePath
-    test_file: Path
+from .types import Benchmark, Instruction
 
 
 @dataclass(frozen=True)
@@ -41,13 +32,13 @@ _TESTS = {
 }
 
 
-def _cartesian() -> Iterator[_Instruction]:
+def _cartesian() -> Iterator[Instruction]:
     lhs = _FRAMEWORKS
     rhs = tuple((method, path) for method, paths in _TESTS.items() for path in paths)
 
-    def cont() -> Iterator[_Instruction]:
+    def cont() -> Iterator[Instruction]:
         for framework, (method, path) in product(lhs, sample(rhs, k=len(rhs))):
-            inst = _Instruction(
+            inst = Instruction(
                 framework=framework,
                 method=method,
                 cwd=PurePath(),
@@ -90,22 +81,10 @@ async def benchmarks(
         parsed = _naive_tokenize(inst.test_file)
         feed = islice(zip(time_gen, parsed.gen), chars)
 
-        with NamedTemporaryFile(mode="w", delete=False) as fd_1, NamedTemporaryFile(
-            mode="w", delete=False
-        ) as fd_2:
-            t_in, t_out = Path(fd_1.name), Path(fd_2.name)
-            fd_1.write(parsed.text)
-
-        env = {
-            "TST_FRAMEWORK": inst.framework,
-            "TST_METHOD": inst.method,
-            "TST_INPUT": normcase(t_in),
-            "TST_OUTPUT": normcase(t_out),
-        }
-
-        await tmux(Path(), env=env, document=t_in, feed=feed)
-        json = t_out.read_text()
+        out = await tmux(inst, feed=feed)
+        json = out.read_text()
         sample = decode(json)
+
         stat = stats(sample)
         plotted = plot(
             cwd=cwd,
@@ -113,6 +92,7 @@ async def benchmarks(
             method=inst.method,
             sample=sample,
         )
+
         benchmark = Benchmark(
             framework=inst.framework,
             method=inst.method,

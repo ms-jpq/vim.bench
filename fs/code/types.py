@@ -1,5 +1,13 @@
 from dataclasses import dataclass
-from pathlib import PurePath
+from pathlib import Path, PurePath
+
+
+@dataclass(frozen=True)
+class Instruction:
+    framework: str
+    method: str
+    cwd: PurePath
+    test_file: Path
 
 
 @dataclass(frozen=True)
