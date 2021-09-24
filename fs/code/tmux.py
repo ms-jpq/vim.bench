@@ -13,7 +13,7 @@ from std2.asyncio.subprocess import call
 from .types import Instruction
 
 _SHORT = 0.1
-_LONG = 0.6
+_LONG = 1
 
 
 async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
