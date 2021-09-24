@@ -8,7 +8,7 @@ from pathlib import Path, PurePath
 from random import choice, sample, shuffle, uniform
 from sys import exit
 from tempfile import NamedTemporaryFile
-from typing import Iterator, Sequence, Tuple
+from typing import AsyncIterator, Iterator, Sequence, Tuple
 
 from std2.pickle import new_decoder
 
@@ -96,7 +96,7 @@ async def main() -> int:
     cartesian = _cartesian(args.reps)
     decode = new_decoder[Sequence[float]](Sequence[float])
 
-    async def cont() -> _Benched:
+    async def cont() -> AsyncIterator[_Benched]:
         for framework, method, path in cartesian:
             parsed = _naive_tokenize(path)
             feed = islice(zip(time_gen, chain("goi", parsed.gen)), args.tokens)
@@ -126,6 +126,8 @@ async def main() -> int:
                 times=times,
             )
             yield benched
+
+    results = [benched async for benched in cont()]
 
     return 0
 
