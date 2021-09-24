@@ -11,7 +11,6 @@ def _parse_args() -> Namespace:
     parser.add_argument("--hi", type=float, required=True)
     parser.add_argument("--tokens", type=int, required=True)
     parser.add_argument("--reps", type=int, required=True)
-
     return parser.parse_args()
 
 
