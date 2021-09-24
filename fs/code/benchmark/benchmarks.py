@@ -27,7 +27,7 @@ class _Parsed:
 _DATA = Path(sep) / "data"
 _BUFFERS = _DATA / "buffers"
 
-_FRAMEWORKS = {"coq", "coc", "cmp"}
+_FRAMEWORKS = {"coq", "cmp"}
 _TESTS = {
     "buf": {*_BUFFERS.iterdir()},
     "lsp": set(),
