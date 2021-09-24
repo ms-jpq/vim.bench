@@ -5,10 +5,14 @@ from typing import Optional
 
 from std2.asyncio.subprocess import call
 
-_PACK = Path().home() / ".config" / "nvim" / "pack" / "modules" / "start"
+_PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
+_PACK_OPT = _PACK_HOME / "opt"
+_PACK_START = _PACK_HOME / "start"
 
 
-async def _git(uri: str, branch: Optional[str] = None) -> None:
+async def _git(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:
+    cwd = _PACK_OPT if lazy else _PACK_START
+
     await call(
         "git",
         "clone",
@@ -17,7 +21,7 @@ async def _git(uri: str, branch: Optional[str] = None) -> None:
         *(("--branch", branch) if branch else ()),
         "--",
         uri,
-        cwd=_PACK,
+        cwd=cwd,
         capture_stderr=False,
         capture_stdout=False,
     )
@@ -31,13 +35,13 @@ async def _coq() -> None:
         "-m",
         "coq",
         "deps",
-        cwd=_PACK / "coq_nvim",
+        cwd=_PACK_START / "coq_nvim",
     )
 
 
 async def _coc() -> None:
     uri = "https://github.com/neoclide/coc.nvim"
-    await _git(uri, branch="release")
+    await _git(uri, lazy=True, branch="release")
 
 
 async def _cmp() -> None:
@@ -51,7 +55,9 @@ async def _cmp() -> None:
 
 
 async def main() -> int:
-    _PACK.mkdir(parents=True, exist_ok=True)
+    for path in (_PACK_OPT, _PACK_START):
+        path.mkdir(parents=True, exist_ok=True)
+
     await gather(_coq(), _coc(), _cmp())
 
     return 0
