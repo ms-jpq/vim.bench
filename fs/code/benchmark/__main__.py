@@ -1,11 +1,19 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
+from json import dumps
+from locale import strxfrm
 from os import getcwd
 from pathlib import PurePath
 from statistics import NormalDist
 from sys import exit
+from typing import Sequence
+
+from std2.asyncio.subprocess import call
+from std2.locale import pathsort_key
+from std2.pickle import new_encoder
 
 from .benchmarks import benchmarks as bench
+from .types import Benchmark
 
 
 def _parse_args() -> Namespace:
@@ -35,6 +43,25 @@ async def main() -> int:
     benchmarks = [
         benchmark async for benchmark in bench(cwd, norm=norm, samples=args.samples)
     ]
+    encode = new_encoder[Sequence[Benchmark]](Sequence[Benchmark])
+    encoded = encode(
+        sorted(
+            benchmarks,
+            key=lambda b: (
+                strxfrm(b.framework),
+                strxfrm(b.method),
+                pathsort_key(b.data_file),
+            ),
+        )
+    )
+    json = dumps(encoded, check_circular=False, ensure_ascii=False)
+    await call(
+        "sortd",
+        "yaml",
+        capture_stderr=False,
+        capture_stdout=False,
+        stdin=json.encode(),
+    )
 
     return 0
 

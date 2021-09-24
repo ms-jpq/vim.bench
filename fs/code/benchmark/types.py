@@ -24,7 +24,7 @@ class Stats:
 class Benchmark:
     framework: str
     method: str
-    data: PurePath
+    data_file: PurePath
     total_tokens: int
     unique_tokens: int
     stats: Stats

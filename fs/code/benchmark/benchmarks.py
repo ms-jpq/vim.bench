@@ -97,7 +97,7 @@ async def benchmarks(
         benchmark = Benchmark(
             framework=inst.framework,
             method=inst.method,
-            data=inst.test_file,
+            data_file=inst.test_file,
             total_tokens=parsed.tot,
             unique_tokens=parsed.uniq,
             stats=stat,

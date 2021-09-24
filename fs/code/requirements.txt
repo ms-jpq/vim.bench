@@ -1,2 +1,3 @@
 std2@https://github.com/ms-jpq/std2/archive/3c5445bdce326638d36d31e91ba4708dd7a9e8b9.tar.gz
+sortd==1.1.15
 seaborn==0.11.2
