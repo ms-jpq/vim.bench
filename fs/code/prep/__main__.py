@@ -29,10 +29,9 @@ async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
         await call(
             "git",
             "clone",
-            "--jobs",
-            str(cpu_count()),
-            "--depth",
-            "1",
+            "-v",
+            f"--jobs={cpu_count()}",
+            "--depth=1",
             *(("--branch", branch) if branch else ()),
             "--",
             uri,
