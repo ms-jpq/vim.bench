@@ -36,7 +36,7 @@ _BUFFERS = _DATA / "buffers"
 
 _FRAMEWORKS = {"coq", "coc", "cmp"}
 _TESTS = {
-    "buf": set(),
+    "buf": {*_BUFFERS.iterdir()},
     "lsp": set(),
 }
 

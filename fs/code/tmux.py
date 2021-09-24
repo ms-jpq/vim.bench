@@ -32,7 +32,7 @@ async def tmux(
             else:
                 await sleep(0)
 
-        for delay, chars in chain(zip(repeat(_SHORT), "goi"), feed):
+        for delay, chars in chain(zip(repeat(_SHORT), "Goi"), feed):
             await call(
                 "tmux",
                 "-S",

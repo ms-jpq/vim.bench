@@ -28,4 +28,4 @@ COPY ./fs /
 
 WORKDIR /
 ENTRYPOINT [ "python3", "-m", "code" ]
-CMD [ "--lo", "0.01", "--hi", "0.02", "--chars", "8888" ]
+CMD [ "--lo", "0.005", "--hi", "0.01", "--chars", "8888" ]
