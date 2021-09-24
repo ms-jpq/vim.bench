@@ -5,11 +5,12 @@ from json import loads
 from os import linesep
 from os.path import sep
 from pathlib import Path, PurePath
-from random import choice, sample, shuffle
+from random import Random, sample, shuffle
 from statistics import NormalDist
-from typing import AsyncIterator, Iterator, Sequence
+from typing import AbstractSet, AsyncIterator, Iterator, Sequence
 
 from std2.pickle import new_decoder
+from uuid4 import uuid4
 
 from .stats import plot, stats
 from .tmux import tmux
@@ -19,9 +20,9 @@ from .types import Benchmark, Instruction
 @dataclass(frozen=True)
 class _Parsed:
     text: str
-    tot: int
-    uniq: int
-    gen: Iterator[str]
+    tot: Sequence[str]
+    uniq: AbstractSet[str]
+    ws: Sequence[str]
 
 
 _DATA = Path(sep) / "data"
@@ -70,9 +71,8 @@ def _naive_tokenize(path: Path) -> _Parsed:
     )
     uniq = {*tot}
     ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
-    gen = chain.from_iterable(iter(lambda: choice(tot) + choice(ws), None))
 
-    parsed = _Parsed(text=text, tot=len(tot), uniq=len(uniq), gen=gen)
+    parsed = _Parsed(text=text, tot=tot, uniq=uniq, ws=ws)
     return parsed
 
 
@@ -82,9 +82,15 @@ async def benchmarks(
     cartesian = _cartesian()
     decode = new_decoder[Sequence[float]](Sequence[float])
 
+    seed = uuid4().bytes
     for inst in cartesian:
         parsed = _naive_tokenize(inst.test_file)
-        feed = zip(norm.samples(samples), parsed.gen)
+
+        rand = Random(seed)
+        gen = chain.from_iterable(
+            iter(lambda: rand.choice(parsed.tot) + rand.choice(parsed.ws), None)
+        )
+        feed = zip(norm.samples(samples, seed=seed), gen)
 
         out = await tmux(inst, feed=feed)
         json = loads(out.read_text())
@@ -102,8 +108,8 @@ async def benchmarks(
             framework=inst.framework,
             method=inst.method,
             data_file=inst.test_file,
-            total_tokens=parsed.tot,
-            unique_tokens=parsed.uniq,
+            total_tokens=len(parsed.tot),
+            unique_tokens=len(parsed.uniq),
             stats=stat,
             plot=plotted,
         )
