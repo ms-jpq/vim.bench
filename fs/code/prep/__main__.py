@@ -56,6 +56,7 @@ async def _lsps() -> None:
             "install",
             "--global",
             "--",
+            "typescript",
             "typescript-language-server",
             "pyright",
             capture_stdout=False,
