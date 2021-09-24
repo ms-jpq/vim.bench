@@ -39,6 +39,7 @@ async def _lsps() -> None:
         call(
             "npm",
             "install",
+            "--global",
             "--",
             "typescript-language-server",
             "pyright",
