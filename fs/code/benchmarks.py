@@ -66,14 +66,10 @@ def _naive_tokenize(path: Path) -> _Parsed:
     text = path.read_text()
     lines = text.splitlines()
     tot = tuple(
-        chain.from_iterable(
-            token
-            for line in lines
-            for maybe_token in line.split()
-            if (
-                token := "".join(t for t in maybe_token if t.isalnum() or t in unifying)
-            )
-        )
+        token
+        for line in lines
+        for maybe_token in line.split()
+        if (token := "".join(t for t in maybe_token if t.isalnum() or t in unifying))
     )
     uniq = {*tot}
     ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
