@@ -78,7 +78,7 @@ async def _cmp() -> None:
 
 async def _repos() -> None:
     uris = {
-        "https://github.com/microsoft/TypeScript",
+        "https://github.com/nodejs/node",
         "https://github.com/python/mypy",
     }
     await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))

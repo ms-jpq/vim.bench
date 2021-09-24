@@ -32,7 +32,7 @@ _FRAMEWORKS = {"coq", "cmp"}
 _TESTS = {
     "buf": tuple(zip((_BUFFERS,), _BUFFERS.iterdir())),
     "lsp": (
-        (_LSP / "node", _LSP / "node" / "lib" / "rep.js"),
+        (_LSP / "node", _LSP / "node" / "lib" / "repl.js"),
         (_LSP / "mypy", _LSP / "mypy" / "mypy" / "checkstrformat.js"),
     ),
 }
@@ -43,11 +43,11 @@ def _cartesian() -> Iterator[Instruction]:
     rhs = tuple((method, path) for method, paths in _TESTS.items() for path in paths)
 
     def cont() -> Iterator[Instruction]:
-        for framework, (method, path) in product(lhs, sample(rhs, k=len(rhs))):
+        for framework, (method, (cwd, path)) in product(lhs, sample(rhs, k=len(rhs))):
             inst = Instruction(
                 framework=framework,
                 method=method,
-                cwd=PurePath(),
+                cwd=cwd,
                 test_file=path,
             )
             yield inst
