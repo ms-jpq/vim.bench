@@ -1,5 +1,9 @@
 vim.opt.showmode = false
 
+local lsp = require("lspconfig")
+lsp.pyright.setup {}
+lsp.tsserver.setup {}
+
 print(vim.env.TST_FRAMEWORK .. " >>> " .. vim.env.TST_METHOD)
 
 TIMER = {}

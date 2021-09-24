@@ -26,11 +26,15 @@ class _Parsed:
 
 _DATA = Path(sep) / "data"
 _BUFFERS = _DATA / "buffers"
+_LSP = _DATA / "lsp"
 
 _FRAMEWORKS = {"coq", "cmp"}
 _TESTS = {
-    "buf": {*_BUFFERS.iterdir()},
-    "lsp": set(),
+    "buf": tuple(zip((_BUFFERS,), _BUFFERS.iterdir())),
+    "lsp": (
+        (_LSP / "node", _LSP / "node" / "lib" / "rep.js"),
+        (_LSP / "mypy", _LSP / "mypy" / "mypy" / "checkstrformat.js"),
+    ),
 }
 
 

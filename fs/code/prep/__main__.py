@@ -1,5 +1,6 @@
 from asyncio import gather, run
-from pathlib import Path
+from os.path import sep
+from pathlib import Path, PurePath
 from sys import executable, exit
 from typing import Optional
 
@@ -8,11 +9,10 @@ from std2.asyncio.subprocess import call
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
 _PACK_OPT = _PACK_HOME / "opt"
 _PACK_START = _PACK_HOME / "start"
+_DATA_LSP = Path(sep) / "data" / "lsp"
 
 
-async def _git(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:
-    cwd = _PACK_OPT if lazy else _PACK_START
-
+async def _git(cwd: PurePath, uri: str, branch: Optional[str] = None) -> None:
     await call(
         "git",
         "clone",
@@ -27,9 +27,30 @@ async def _git(uri: str, lazy: bool = False, branch: Optional[str] = None) -> No
     )
 
 
+async def _pack(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:
+    cwd = _PACK_OPT if lazy else _PACK_START
+    await _git(cwd, uri=uri, branch=branch)
+
+
+async def _lsps() -> None:
+    uri = "https://github.com/neovim/nvim-lspconfig"
+    await gather(
+        _pack(uri),
+        call(
+            "npm",
+            "install",
+            "--",
+            "typescript-language-server",
+            "pyright",
+            capture_stdout=False,
+            capture_stderr=False,
+        ),
+    )
+
+
 async def _coq() -> None:
     uri = "https://github.com/ms-jpq/coq_nvim"
-    await _git(uri)
+    await _pack(uri)
     await call(
         Path(executable).resolve(),
         "-m",
@@ -41,7 +62,7 @@ async def _coq() -> None:
 
 async def _coc() -> None:
     uri = "https://github.com/neoclide/coc.nvim"
-    await _git(uri, lazy=True, branch="release")
+    await _pack(uri, lazy=True, branch="release")
 
 
 async def _cmp() -> None:
@@ -51,14 +72,22 @@ async def _cmp() -> None:
         "https://github.com/hrsh7th/cmp-nvim-lsp",
         "https://github.com/hrsh7th/cmp-path",
     }
-    await gather(*map(_git, uris))
+    await gather(*map(_pack, uris))
+
+
+async def _repos() -> None:
+    uris = {
+        "https://github.com/microsoft/TypeScript",
+        "https://github.com/python/mypy",
+    }
+    await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))
 
 
 async def main() -> int:
-    for path in (_PACK_OPT, _PACK_START):
+    for path in (_PACK_OPT, _PACK_START, _DATA_LSP):
         path.mkdir(parents=True, exist_ok=True)
 
-    await gather(_coq(), _coc(), _cmp())
+    await gather(_lsps(), _coq(), _coc(), _cmp(), _repos())
 
     return 0
 
