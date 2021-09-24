@@ -8,9 +8,9 @@ from pathlib import Path, PurePath
 from random import Random, sample, shuffle
 from statistics import NormalDist
 from typing import AbstractSet, AsyncIterator, Iterator, Sequence
+from uuid import uuid4
 
 from std2.pickle import new_decoder
-from uuid4 import uuid4
 
 from .stats import plot, stats
 from .tmux import tmux
