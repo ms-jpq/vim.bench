@@ -1,3 +1,6 @@
+from typing import Sequence
+
+
 from .types import Stats
 
 
