@@ -1,5 +1,6 @@
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
 from asyncio import run
+from dataclasses import dataclass
 from json import dumps
 from locale import strxfrm
 from os import getcwd
@@ -16,20 +17,61 @@ from .benchmarks import benchmarks as bench
 from .types import Benchmark
 
 
-def _parse_args() -> Namespace:
+@dataclass(frozen=True)
+class _Args:
+    samples: int
+    wpm: int
+    avg_word_len: int
+    variance: int
+
+
+@dataclass(frozen=True)
+class _KPS:
+    mu: float
+    sigma: float
+
+
+@dataclass(frozen=True)
+class _Yaml:
+    args: _Args
+    keys_per_second: _KPS
+    benchmarks: Sequence[Benchmark]
+
+
+async def _dump(yaml: _Yaml) -> None:
+    encode = new_encoder[_Yaml](_Yaml)
+    encoded = encode(yaml)
+    json = dumps(encoded, check_circular=False, ensure_ascii=False)
+    await call(
+        "sortd",
+        "yaml",
+        capture_stderr=False,
+        capture_stdout=False,
+        stdin=json.encode(),
+    )
+
+
+def _parse_args() -> _Args:
     parser = ArgumentParser()
     parser.add_argument("--samples", type=int, default=666)
     parser.add_argument("--wpm", type=int, default=99)
     parser.add_argument("--avg-word-len", type=int, default=9)
     parser.add_argument("--variance", type=float, default=0.15)
-    return parser.parse_args()
+    ns = parser.parse_args()
+    args = _Args(
+        samples=ns.samples,
+        wpm=ns.wpm,
+        avg_word_len=ns.avg_word_len,
+        variance=ns.variance,
+    )
+    assert args.avg_word_len > 1
+    assert args.wpm > 1
+    assert args.variance > 0 and args.variance < 1
+    return args
 
 
 async def main() -> int:
     args = _parse_args()
-    assert args.avg_word_len > 1
-    assert args.wpm > 1
-    assert args.variance > 0 and args.variance < 1
 
     cwd = PurePath(getcwd())
 
@@ -43,25 +85,21 @@ async def main() -> int:
     benchmarks = [
         benchmark async for benchmark in bench(cwd, norm=norm, samples=args.samples)
     ]
-    encode = new_encoder[Sequence[Benchmark]](Sequence[Benchmark])
-    encoded = encode(
-        sorted(
-            benchmarks,
-            key=lambda b: (
-                strxfrm(b.framework),
-                strxfrm(b.method),
-                pathsort_key(b.data_file),
-            ),
-        )
+    ordered = sorted(
+        benchmarks,
+        key=lambda b: (
+            strxfrm(b.framework),
+            strxfrm(b.method),
+            pathsort_key(b.data_file),
+        ),
     )
-    json = dumps(encoded, check_circular=False, ensure_ascii=False)
-    await call(
-        "sortd",
-        "yaml",
-        capture_stderr=False,
-        capture_stdout=False,
-        stdin=json.encode(),
+
+    yaml = _Yaml(
+        args=args,
+        keys_per_second=_KPS(mu=mu, sigma=sigma),
+        benchmarks=ordered,
     )
+    await _dump(yaml)
 
     return 0
 
