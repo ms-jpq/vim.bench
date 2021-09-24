@@ -16,6 +16,8 @@ This should work fairly well for **c family** of languages, which are widely use
 
 The distribution of spaces and lineseps is also generated from the same buffer.
 
+Note. the same seed is used to generate reproducible randomness.
+
 ### Measurement
 
 Time lapse between latest keypress and completion event is measured and stored.
