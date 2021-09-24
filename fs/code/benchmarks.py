@@ -10,7 +10,7 @@ from typing import AsyncIterator, Iterator, Sequence
 
 from std2.pickle import new_decoder
 
-from .stats import stats
+from .stats import plot, stats
 from .tmux import tmux
 from .types import Benchmark
 
@@ -36,13 +36,12 @@ _BUFFERS = _DATA / "buffers"
 
 _FRAMEWORKS = {"coq", "coc", "cmp"}
 _TESTS = {
-    "buf": {*_BUFFERS.iterdir()},
+    "buf": set(),
     "lsp": set(),
 }
 
 
-def _cartesian(reps: int) -> Iterator[_Instruction]:
-    assert reps > 0
+def _cartesian() -> Iterator[_Instruction]:
     lhs = _FRAMEWORKS
     rhs = tuple((method, path) for method, paths in _TESTS.items() for path in paths)
 
@@ -56,10 +55,9 @@ def _cartesian(reps: int) -> Iterator[_Instruction]:
             )
             yield inst
 
-    for _ in range(reps):
-        cartesian = [*cont()]
-        shuffle(cartesian)
-        yield from cartesian
+    cartesian = [*cont()]
+    shuffle(cartesian)
+    yield from cartesian
 
 
 @lru_cache(maxsize=None)
@@ -86,10 +84,10 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
 
 async def benchmarks(
-    lo: float, hi: float, tokens: int, reps: int
+    cwd: PurePath, lo: float, hi: float, tokens: int
 ) -> AsyncIterator[Benchmark]:
     time_gen = iter(lambda: uniform(lo, hi), None)
-    cartesian = _cartesian(reps)
+    cartesian = _cartesian()
     decode = new_decoder[Sequence[float]](Sequence[float])
 
     for inst in cartesian:
@@ -111,8 +109,14 @@ async def benchmarks(
 
         await tmux(Path(), env=env, document=t_in, feed=feed)
         json = t_out.read_text()
-        times = decode(json)
-        stat = stats(times)
+        sample = decode(json)
+        stat = stats(sample)
+        plotted = plot(
+            cwd=cwd,
+            framework=inst.framework,
+            method=inst.method,
+            sample=sample,
+        )
         benchmark = Benchmark(
             framework=inst.framework,
             method=inst.method,
@@ -120,5 +124,6 @@ async def benchmarks(
             total_tokens=parsed.tot,
             unique_tokens=parsed.uniq,
             stats=stat,
+            plot=plotted,
         )
         yield benchmark

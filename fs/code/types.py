@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 from pathlib import PurePath
-from typing import Sequence
 
 
 @dataclass(frozen=True)
 class Stats:
-    sample: Sequence[float]
+    mean: float
+    std: float
+    q0: float
+    q50: float
+    q95: float
+    q100: float
 
 
 @dataclass(frozen=True)
@@ -16,3 +20,4 @@ class Benchmark:
     total_tokens: int
     unique_tokens: int
     stats: Stats
+    plot: PurePath

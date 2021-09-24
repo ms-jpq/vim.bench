@@ -1,5 +1,7 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
+from os import getcwd
+from pathlib import PurePath
 from sys import exit
 
 from .benchmarks import benchmarks as bench
@@ -16,12 +18,13 @@ def _parse_args() -> Namespace:
 
 async def main() -> int:
     args = _parse_args()
+    cwd = PurePath(getcwd())
+
     benchmarks = [
         benchmark
-        async for benchmark in bench(
-            args.lo, args.hi, tokens=args.tokens, reps=args.reps
-        )
+        async for benchmark in bench(cwd, lo=args.lo, hi=args.hi, tokens=args.tokens)
     ]
+
     return 0
 
 
