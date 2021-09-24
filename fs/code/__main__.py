@@ -11,8 +11,7 @@ def _parse_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument("--lo", type=float, required=True)
     parser.add_argument("--hi", type=float, required=True)
-    parser.add_argument("--tokens", type=int, required=True)
-    parser.add_argument("--reps", type=int, required=True)
+    parser.add_argument("--chars", type=int, required=True)
     return parser.parse_args()
 
 
@@ -22,7 +21,7 @@ async def main() -> int:
 
     benchmarks = [
         benchmark
-        async for benchmark in bench(cwd, lo=args.lo, hi=args.hi, tokens=args.tokens)
+        async for benchmark in bench(cwd, lo=args.lo, hi=args.hi, chars=args.chars)
     ]
 
     return 0
