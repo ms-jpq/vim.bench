@@ -12,7 +12,7 @@ Automated reproducible completion framework benchmarking suite for nvim.
 
 The words typed are _naive tokens_ from parsing current document into alphanum + "\_" delimited by whitespaces and symbols.
 
-This should work fairly well for **c family** of languages, which are widely used.
+These tokens should work fairly well for **c family** of languages, which are widely used.
 
 The distribution of spaces and lineseps is also generated from the same buffer.
 
@@ -20,9 +20,9 @@ Note. the same seed is used to generate reproducible randomness.
 
 ### Measurement
 
-Time lapse between latest keypress and completion event is measured and stored.
+n keystrokes `--samples=n` is performed.
 
-n `--samples=n` is taken.
+Time lapse between latest buffer change and calls to `vim.fn.complete` is measured and stored.
 
 ### Speed
 

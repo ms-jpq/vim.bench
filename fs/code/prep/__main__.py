@@ -7,6 +7,7 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from std2.asyncio.subprocess import call
+from yaml import safe_load
 
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
 _PACK_OPT = _PACK_HOME / "opt"
@@ -92,10 +93,8 @@ async def _cmp() -> None:
 
 
 async def _repos() -> None:
-    uris = {
-        "https://github.com/nodejs/node",
-        "https://github.com/python/mypy",
-    }
+    yaml = _DATA_LSP / "repos.yml"
+    uris = safe_load(yaml.read_text())
     await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))
 
 

@@ -7,8 +7,7 @@ lsp.tsserver.setup {}
 print(vim.env.TST_FRAMEWORK .. " >>> " .. vim.env.TST_METHOD)
 
 TIMER = {}
-
-local acc = {}
+TIMER.acc = {}
 
 TIMER.start = function()
   vim.api.nvim_buf_attach(
@@ -22,17 +21,15 @@ TIMER.start = function()
   )
 end
 
-TIMER.done = function()
+local comp = vim.fn.complete
+vim.fn.complete = function(...)
   local span = vim.loop.now() - TIMER.mark
-  local info = vim.fn.complete_info()
-  if info.mode == "eval" and info.pum_visible then
-    table.insert(acc, span)
-  end
-  TIMER.mark = nil
+  table.insert(TIMER.acc, span)
+  comp(...)
 end
 
 TIMER.fin = function()
-  local json = vim.fn.json_encode(acc)
+  local json = vim.fn.json_encode(TIMER.acc)
   vim.fn.writefile({json}, vim.env.TST_OUTPUT)
 end
 

@@ -28,6 +28,7 @@ ENV PATH="/venv/bin:$PATH" \
 WORKDIR /code
 COPY ./fs/code/requirements.txt /code/
 RUN pip3 install --requirement /code/requirements.txt
+COPY ./fs/data /data
 COPY ./fs/code/prep /code/prep
 RUN python3 -m prep
 
