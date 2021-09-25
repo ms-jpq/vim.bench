@@ -1,17 +1,16 @@
 from dataclasses import dataclass
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from typing import AbstractSet
 
 
 @dataclass(frozen=True)
-class _SourceSpecs:
+class _TestSpec:
     cwd: PurePath
-    files: AbstractSet[PurePath]
+    files: AbstractSet[Path]
 
 
 @dataclass(frozen=True)
 class Specs:
     repos: AbstractSet[str]
     frameworks: AbstractSet[str]
-    buf: _SourceSpecs
-    lsp: _SourceSpecs
+    tests: AbstractSet[_TestSpec]

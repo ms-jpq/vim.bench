@@ -25,11 +25,10 @@ def stats(sample: Sequence[float]) -> Stats:
     return stats
 
 
-def plot(cwd: PurePath, inst: Instruction, sample: Sequence[float]) -> PurePath:
-    title = f"{inst.framework} :: {inst.method}"
-    path = (
-        cwd / md5((title + normcase(inst.test_file)).encode()).hexdigest()
-    ).with_suffix(".png")
+def plot(dump_into: PurePath, inst: Instruction, sample: Sequence[float]) -> PurePath:
+    path = normcase(inst.test_file)
+    title = f"{inst.framework} :: {path}"
+    path = (dump_into / md5(title.encode()).hexdigest()).with_suffix(".png")
     plot = kdeplot(data=sample)
     plot.set(title=title, xlabel="ms")
     plot.get_figure().savefig(path)

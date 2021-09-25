@@ -4,14 +4,12 @@ frameworks:
   # - coc
   - cmp
 
-buffers:
+tests:
   - cwd: /data/buffers
     files:
       - 1-short.txt
       - 2-medium.txt
       - 3-long.txt
-
-lsp:
   - cwd: /data/lsp/oo
     files:
       - node/

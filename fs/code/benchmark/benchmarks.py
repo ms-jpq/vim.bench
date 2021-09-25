@@ -4,16 +4,16 @@ from itertools import chain, product
 from json import loads
 from os import linesep
 from pathlib import Path, PurePath
-from random import Random, sample, shuffle
+from random import Random
 from statistics import NormalDist
-from typing import AbstractSet, AsyncIterator, Iterator, MutableSequence, Sequence
+from typing import AsyncIterator, Iterator, MutableSequence, Sequence
 from uuid import uuid4
 
 from std2.pickle import new_decoder
 
+from ..parse import specs
 from .stats import plot, stats
 from .tmux import tmux
-from ..types import Specs
 from .types import Benchmark, Instruction
 
 
@@ -21,29 +21,19 @@ from .types import Benchmark, Instruction
 class _Parsed:
     text: str
     tot: Sequence[str]
-    uniq: AbstractSet[str]
     ws: Sequence[str]
 
 
 def _cartesian() -> Iterator[Instruction]:
-
-
-    lhs = _FRAMEWORKS
-    rhs = tuple((method, path) for method, paths in _TESTS.items() for path in paths)
-
-    def cont() -> Iterator[Instruction]:
-        for framework, (method, (cwd, path)) in product(lhs, sample(rhs, k=len(rhs))):
+    spec = specs()
+    for framework, test in product(spec.frameworks, spec.tests):
+        for file in test.files:
             inst = Instruction(
                 framework=framework,
-                method=method,
-                cwd=cwd,
-                test_file=path,
+                cwd=test.cwd,
+                test_file=file,
             )
             yield inst
-
-    cartesian = [*cont()]
-    shuffle(cartesian)
-    yield from cartesian
 
 
 @lru_cache(maxsize=None)
@@ -68,14 +58,13 @@ def _naive_tokenize(path: Path) -> _Parsed:
                     acc.clear()
 
     tot = tuple(cont())
-    uniq = {*tot}
     ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
-    parsed = _Parsed(text=text, tot=tot, uniq=uniq, ws=ws)
+    parsed = _Parsed(text=text, tot=tot, ws=ws)
     return parsed
 
 
 async def benchmarks(
-    cwd: PurePath, norm: NormalDist, samples: int
+    plot_dir: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
     cartesian = _cartesian()
     decode = new_decoder[Sequence[float]](Sequence[float])
@@ -96,18 +85,14 @@ async def benchmarks(
 
         stat = stats(sample)
         plotted = plot(
-            cwd=cwd,
-            framework=inst.framework,
-            method=inst.method,
+            dump_into=plot_dir,
+            inst=inst,
             sample=sample,
         )
-
         benchmark = Benchmark(
             framework=inst.framework,
-            method=inst.method,
             data_file=inst.test_file,
-            total_tokens=len(parsed.tot),
-            unique_tokens=len(parsed.uniq),
+            tokens=len(parsed.tot),
             stats=stat,
             plot=plotted,
         )

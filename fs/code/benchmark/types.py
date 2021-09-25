@@ -5,7 +5,6 @@ from pathlib import Path, PurePath
 @dataclass(frozen=True)
 class Instruction:
     framework: str
-    method: str
     cwd: PurePath
     test_file: Path
 
@@ -24,9 +23,7 @@ class Stats:
 @dataclass(frozen=True)
 class Benchmark:
     framework: str
-    method: str
     data_file: PurePath
-    total_tokens: int
-    unique_tokens: int
+    tokens: int
     stats: Stats
     plot: PurePath
