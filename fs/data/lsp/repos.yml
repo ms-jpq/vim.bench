@@ -1,6 +1,0 @@
----
-- repo: https://github.com/nodejs/node
-  path: node/
-
-- repo: https://github.com/python/mypy
-  path: node

@@ -1,13 +1,13 @@
 from asyncio import gather, run
 from multiprocessing import cpu_count
 from os.path import sep
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from sys import executable, exit
 from typing import Optional
-from urllib.parse import urlparse
 
 from std2.asyncio.subprocess import call
-from yaml import safe_load
+
+from ..parse import specs
 
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
 _PACK_OPT = _PACK_HOME / "opt"
@@ -16,30 +16,19 @@ _DATA_LSP = Path(sep) / "data" / "lsp"
 
 
 async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
-    location = cwd / PurePosixPath(urlparse(uri).path).name
-    if location.exists():
-        await call(
-            "git",
-            "pull",
-            *(("origin", branch) if branch else ()),
-            cwd=location,
-            capture_stderr=False,
-            capture_stdout=False,
-        )
-    else:
-        await call(
-            "git",
-            "clone",
-            "-v",
-            f"--jobs={cpu_count()}",
-            "--depth=1",
-            *(("--branch", branch) if branch else ()),
-            "--",
-            uri,
-            cwd=cwd,
-            capture_stderr=False,
-            capture_stdout=False,
-        )
+    await call(
+        "git",
+        "clone",
+        "-v",
+        f"--jobs={cpu_count()}",
+        "--depth=1",
+        *(("--branch", branch) if branch else ()),
+        "--",
+        uri,
+        cwd=cwd,
+        capture_stderr=False,
+        capture_stdout=False,
+    )
 
 
 async def _pack(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:
@@ -93,8 +82,7 @@ async def _cmp() -> None:
 
 
 async def _repos() -> None:
-    yaml = _DATA_LSP / "repos.yml"
-    uris = safe_load(yaml.read_text())
+    uris = specs().repos
     await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))
 
 

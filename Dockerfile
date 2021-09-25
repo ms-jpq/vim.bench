@@ -25,15 +25,15 @@ ENV PATH="/venv/bin:$PATH" \
     TERM=xterm-256color
 
 
-WORKDIR /code
+WORKDIR /
 COPY ./fs/code/requirements.txt /code/
 RUN pip3 install --requirement /code/requirements.txt
 COPY ./fs/data /data
 COPY ./fs/code/prep /code/prep
-RUN python3 -m prep
+RUN python3 -m code.prep
 
 
 COPY ./fs /
 
 
-ENTRYPOINT [ "python3", "-m", "benchmark" ]
+ENTRYPOINT [ "python3", "-m", "code.benchmark" ]

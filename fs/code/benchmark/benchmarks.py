@@ -3,7 +3,6 @@ from functools import lru_cache
 from itertools import chain, product
 from json import loads
 from os import linesep
-from os.path import sep
 from pathlib import Path, PurePath
 from random import Random, sample, shuffle
 from statistics import NormalDist
@@ -14,6 +13,7 @@ from std2.pickle import new_decoder
 
 from .stats import plot, stats
 from .tmux import tmux
+from ..types import Specs
 from .types import Benchmark, Instruction
 
 
@@ -25,21 +25,9 @@ class _Parsed:
     ws: Sequence[str]
 
 
-_DATA = Path(sep) / "data"
-_BUFFERS = _DATA / "buffers"
-_LSP = _DATA / "lsp"
-
-_FRAMEWORKS = {"coq", "cmp"}
-_TESTS = {
-    "buf": tuple(zip((_BUFFERS,), _BUFFERS.iterdir())),
-    "lsp": (
-        (_LSP / "node", _LSP / "node" / "lib" / "repl.js"),
-        (_LSP / "mypy", _LSP / "mypy" / "mypy" / "checkstrformat.py"),
-    ),
-}
-
-
 def _cartesian() -> Iterator[Instruction]:
+
+
     lhs = _FRAMEWORKS
     rhs = tuple((method, path) for method, paths in _TESTS.items() for path in paths)
 
