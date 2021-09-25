@@ -80,6 +80,29 @@ async def _cmp() -> None:
     await gather(*map(_pack, uris))
 
 
+async def _compe() -> None:
+    uri = "https://github.com/hrsh7th/nvim-compe"
+    await _pack(uri)
+
+
+async def _comp_nvim() -> None:
+    uris = {
+        "https://github.com/nvim-lua/completion-nvim",
+        "https://github.com/steelsojka/completion-buffers",
+    }
+    await gather(*map(_pack, uris))
+
+
+async def _ncm() -> None:
+    uris = {
+        "https://github.com/roxma/nvim-yarp",
+        "https://github.com/ncm2/ncm2",
+        "https://github.com/ncm2/ncm2-bufword",
+        "https://github.com/ncm2/ncm2-path",
+    }
+    await gather(*map(_pack, uris))
+
+
 async def _repos() -> None:
     uris = specs().repos
     await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))
@@ -89,7 +112,16 @@ async def main() -> int:
     for path in (_PACK_OPT, _PACK_START, _DATA_LSP):
         path.mkdir(parents=True, exist_ok=True)
 
-    await gather(_lsps(), _coq(), _coc(), _cmp(), _repos())
+    await gather(
+        _lsps(),
+        _coq(),
+        _coc(),
+        _cmp(),
+        _compe(),
+        _comp_nvim(),
+        _ncm(),
+        _repos(),
+    )
 
     return 0
 
