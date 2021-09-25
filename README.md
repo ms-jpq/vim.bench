@@ -1,10 +1,8 @@
 # Nvim.Bench
 
-Automated reproducible completion framework benchmarking suite for nvim.
+Reproducible completion framework benchmarks.
 
-This whole thing runs inside Docker, so anybody can reproduce it easily.
-
-Fair and balanced
+Runs inside Docker. Fair and balanced
 
 ---
 
@@ -55,6 +53,20 @@ No default sources will be disabled, because users don't tend to do that.
 ---
 
 ## Cool, pictures
+
+[Here it is!]()
+
+The plots are [kernel density estimations](https://en.wikipedia.org/wiki/Kernel_density_estimation), have no idea why they fitted more than 1 curve for some plots.
+
+I usually use `R`, not used to python ploting. Anyways, they are an estimate of the true [probability density function](https://en.wikipedia.org/wiki/Probability_density_function).
+
+### Q0, 50, 95, 100?
+
+Mean `min`, `median`, `1 in 20`, `max`, respectively.
+
+Without assuming any statistical distribution:
+
+`Q50` is a more robust measure than `avg`, and `Q95` is a decent measure of a common `bad` value.
 
 ---
 
