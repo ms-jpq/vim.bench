@@ -1,15 +1,13 @@
 from argparse import ArgumentParser
 from asyncio import run
-from base64 import encodebytes
 from dataclasses import dataclass
 from json import dumps
 from locale import strxfrm
-from mimetypes import guess_type
+from os import environ
 from os.path import sep
 from pathlib import Path, PurePath
 from statistics import NormalDist
 from sys import exit
-from tempfile import mkdtemp
 from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -21,7 +19,7 @@ from .benchmarks import benchmarks as bench
 from .types import Benchmark
 
 _TOP_LEVEL = Path(__file__).resolve().parent
-_DUMP = Path(sep) / "dump" / "README.md"
+_DUMP = Path(sep) / "dump"
 
 
 @dataclass(frozen=True)
@@ -45,13 +43,9 @@ class _Yaml:
     benchmarks: Sequence[Benchmark]
 
 
-def b64_img(path: str) -> str:
-    blob = Path(path).read_bytes()
-    mime, _ = guess_type(path)
-    assert mime
-    b64 = encodebytes(blob).decode()
-    encoded = f"data:{mime};base64, {b64}"
-    return encoded
+def img_path(path: str) -> str:
+    prefix = environ.get("PUBLISH_URI", "./")
+    return prefix + PurePath(path).name
 
 
 async def _dump(yaml: _Yaml) -> None:
@@ -63,7 +57,7 @@ async def _dump(yaml: _Yaml) -> None:
         undefined=StrictUndefined,
         loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
     )
-    j2.filters = {**j2.filters, b64_img.__qualname__: b64_img}
+    j2.filters = {**j2.filters, img_path.__qualname__: img_path}
     rendered = j2.get_template("README.md").render({"BENCHMARKS": yaml.benchmarks})
 
     encoded = encode(yaml)
@@ -75,7 +69,7 @@ async def _dump(yaml: _Yaml) -> None:
         capture_stdout=False,
         stdin=json.encode(),
     )
-    _DUMP.write_text(rendered)
+    (_DUMP / "README.md").write_text(rendered)
 
 
 def _parse_args() -> _Args:
@@ -100,8 +94,6 @@ def _parse_args() -> _Args:
 async def main() -> int:
     args = _parse_args()
 
-    plot_dir = PurePath(mkdtemp())
-
     chars_per_minute = args.avg_word_len * args.wpm
     chars_per_second = chars_per_minute / 60
 
@@ -110,8 +102,7 @@ async def main() -> int:
     norm = NormalDist(mu=mu, sigma=sigma)
 
     benchmarks = [
-        benchmark
-        async for benchmark in bench(plot_dir, norm=norm, samples=args.samples)
+        benchmark async for benchmark in bench(_DUMP, norm=norm, samples=args.samples)
     ]
     ordered = sorted(
         benchmarks,
