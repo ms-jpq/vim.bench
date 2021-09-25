@@ -45,7 +45,7 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
             await sleep(0)
 
     t0 = 0
-    for delay, chars in chain(zip(repeat(_SHORT), "Goi"), feed):
+    for delay, chars in chain(zip(repeat(_SHORT), "Go"), feed):
         with timeit() as t:
             await call(
                 "tmux",

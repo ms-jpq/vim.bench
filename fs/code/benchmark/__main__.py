@@ -3,10 +3,10 @@ from asyncio import run
 from dataclasses import dataclass
 from json import dumps
 from locale import strxfrm
-from os import getcwd
 from pathlib import PurePath
 from statistics import NormalDist
 from sys import exit
+from tempfile import mkdtemp
 from typing import Sequence
 
 from std2.asyncio.subprocess import call
@@ -73,7 +73,7 @@ def _parse_args() -> _Args:
 async def main() -> int:
     args = _parse_args()
 
-    cwd = PurePath(getcwd())
+    plot_dir = PurePath(mkdtemp())
 
     chars_per_minute = args.avg_word_len * args.wpm
     chars_per_second = chars_per_minute / 60
@@ -83,7 +83,8 @@ async def main() -> int:
     norm = NormalDist(mu=mu, sigma=sigma)
 
     benchmarks = [
-        benchmark async for benchmark in bench(cwd, norm=norm, samples=args.samples)
+        benchmark
+        async for benchmark in bench(plot_dir, norm=norm, samples=args.samples)
     ]
     ordered = sorted(
         benchmarks,
