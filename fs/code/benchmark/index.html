@@ -22,27 +22,27 @@
           <tbody>
             <tr>
               <td>Completions</td>
-              <td>{{ benchmark.items | e }}</td>
+              <td>{{ benchmark.stats.items | e }}</td>
             </tr>
             <tr>
               <td>Mean</td>
-              <td>{{ benchmark.mean | round | e }}ms</td>
+              <td>{{ benchmark.stats.mean | round | e }}ms</td>
             </tr>
             <tr>
               <td>Q0</td>
-              <td>{{ benchmark.q0 | round | e }}ms</td>
+              <td>{{ benchmark.stats.q0 | round | e }}ms</td>
             </tr>
             <tr>
               <td>Q50</td>
-              <td>{{ benchmark.q50 | round | e }}ms</td>
+              <td>{{ benchmark.stats.q50 | round | e }}ms</td>
             </tr>
             <tr>
               <td>Q95</td>
-              <td>{{ benchmark.q95 | round | e }}ms</td>
+              <td>{{ benchmark.stats.q95 | round | e }}ms</td>
             </tr>
             <tr>
               <td>Q100</td>
-              <td>{{ benchmark.q100 | round | e }}ms</td>
+              <td>{{ benchmark.stats.q100 | round | e }}ms</td>
             </tr>
           </tbody>
         </table>
