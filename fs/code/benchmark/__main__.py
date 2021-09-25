@@ -44,7 +44,7 @@ class _Yaml:
 
 
 def img_path(path: str) -> str:
-    prefix = environ.get("PUBLISH_URI", "./")
+    prefix = environ.get("PUBLISH_URL", "./")
     return prefix + PurePath(path).name
 
 
