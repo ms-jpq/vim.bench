@@ -23,7 +23,6 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
 
     env = {
         "TST_FRAMEWORK": inst.framework,
-        "TST_METHOD": inst.method,
         "TST_OUTPUT": normcase(t_out),
     }
     args = (

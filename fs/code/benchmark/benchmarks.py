@@ -27,7 +27,8 @@ class _Parsed:
 def _cartesian() -> Iterator[Instruction]:
     spec = specs()
     for framework, test in product(spec.frameworks, spec.tests):
-        for file in test.files:
+        for path in test.files:
+            file = test.cwd / path
             inst = Instruction(
                 framework=framework,
                 cwd=test.cwd,

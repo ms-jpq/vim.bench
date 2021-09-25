@@ -10,13 +10,13 @@ tests:
       - 1-short.txt
       - 2-medium.txt
       - 3-long.txt
-  - cwd: /data/lsp/oo
+  - cwd: /data/lsp/coq_nvim
     files:
-      - node/
-  - cwd: /data/lsp/oo
+      - coq/server/edit.py
+  - cwd: /data/lsp/create-react-app
     files:
-      - node/
+      - create-react-app/packages/create-react-app/createReactApp.js
 
 repos:
-  - https://github.com/nodejs/node
-  - https://github.com/python/mypy
+  - https://github.com/ms-jpq/coq_nvim
+  - https://github.com/facebook/create-react-app

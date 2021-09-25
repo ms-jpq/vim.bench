@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from typing import AbstractSet
+from typing import AbstractSet, Sequence
 
 
 @dataclass(frozen=True)
 class _TestSpec:
-    cwd: PurePath
-    files: AbstractSet[Path]
+    cwd: Path
+    files: AbstractSet[PurePath]
 
 
 @dataclass(frozen=True)
 class Specs:
     repos: AbstractSet[str]
     frameworks: AbstractSet[str]
-    tests: AbstractSet[_TestSpec]
+    tests: Sequence[_TestSpec]
