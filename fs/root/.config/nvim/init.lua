@@ -28,6 +28,7 @@ TIMER.done = function()
   if info.mode == "eval" and info.pum_visible then
     table.insert(acc, span)
   end
+  TIMER.mark = nil
 end
 
 TIMER.fin = function()
