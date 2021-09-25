@@ -4,7 +4,7 @@ local lsp = require("lspconfig")
 lsp.pyright.setup {}
 lsp.tsserver.setup {}
 
-print(vim.env.TST_FRAMEWORK .. " >>> " .. vim.env.TST_METHOD)
+print(">>>" .. vim.env.TST_FRAMEWORK .. "<<<")
 
 local time = function()
   return vim.fn.reltimefloat(vim.fn.reltime())
@@ -37,4 +37,4 @@ TIMER.fin = function()
   vim.fn.writefile({json}, vim.env.TST_OUTPUT)
 end
 
-require("tst_" .. vim.env.TST_FRAMEWORK)(vim.env.TST_METHOD)
+require("tst_" .. vim.env.TST_FRAMEWORK)
