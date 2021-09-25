@@ -86,7 +86,7 @@ For example the streaming completion approach actually has **severe trade offs**
 
 #### Ranking
 
-Having suboptimal ranking is BAD, it pushes work _from fast machines onto slow humans_.
+Having suboptimal ranking is BAD, it pushes work **from fast machines onto slow humans**.
 
 The streaming approach has to be additive, because its too disruptive to shift existing menu items around.
 
