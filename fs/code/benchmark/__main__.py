@@ -21,7 +21,7 @@ from .benchmarks import benchmarks as bench
 from .types import Benchmark
 
 _TOP_LEVEL = Path(__file__).resolve().parent
-_DUMP = Path(sep) / "dump" / "index.html"
+_DUMP = Path(sep) / "dump" / "README.md"
 
 
 @dataclass(frozen=True)
@@ -64,7 +64,7 @@ async def _dump(yaml: _Yaml) -> None:
         loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
     )
     j2.filters = {**j2.filters, b64_img.__qualname__: b64_img}
-    html = j2.get_template("index.html").render({"BENCHMARKS": yaml.benchmarks})
+    rendered = j2.get_template("README.md").render({"BENCHMARKS": yaml.benchmarks})
 
     encoded = encode(yaml)
     json = dumps(encoded, check_circular=False, ensure_ascii=False)
@@ -75,7 +75,7 @@ async def _dump(yaml: _Yaml) -> None:
         capture_stdout=False,
         stdin=json.encode(),
     )
-    _DUMP.write_text(html)
+    _DUMP.write_text(rendered)
 
 
 def _parse_args() -> _Args:
