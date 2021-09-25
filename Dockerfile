@@ -27,13 +27,9 @@ ENV PATH="/venv/bin:$PATH" \
 
 WORKDIR /
 COPY ./fs/code/requirements.txt /code/
-RUN pip3 install --requirement /code/requirements.txt
-COPY ./fs/data /data
-COPY ./fs/code/prep /code/prep
-RUN python3 -m code.prep
-
-
+RUN pip3 install --no-cache-dir --requirement /code/requirements.txt
 COPY ./fs /
+RUN python3 -m code.prep
 
 
 ENTRYPOINT [ "python3", "-m", "code.benchmark" ]

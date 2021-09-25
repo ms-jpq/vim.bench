@@ -89,7 +89,6 @@ async def main() -> int:
         benchmarks,
         key=lambda b: (
             strxfrm(b.framework),
-            strxfrm(b.method),
             pathsort_key(b.data_file),
         ),
     )
