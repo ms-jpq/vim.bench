@@ -11,8 +11,9 @@ from .types import Instruction, Stats
 
 
 def stats(sample: Sequence[float]) -> Stats:
-    mean, std = fmean(sample), stdev(sample)
-    quads = quantiles(sample, 0, 50, 95, 100)
+    mean, std = round(fmean(sample)), round(stdev(sample))
+    quads = {key: round(val) for key, val in quantiles(sample, 0, 50, 95, 100).items()}
+
     stats = Stats(
         items=len(sample),
         mean=mean,

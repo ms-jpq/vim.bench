@@ -1,57 +1,22 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Vim.Bench!</title>
-  </head>
-  <body>
-    <main>
-      {% for benchmark in BENCHMARKS %}
-      <hr />
-      <section>
-        <h2>{{ benchmark.framework | e }}</h2>
-        <h3>{{ benchmark.data_file | e }}</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Key</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Completions</td>
-              <td>{{ benchmark.stats.items | e }}</td>
-            </tr>
-            <tr>
-              <td>Mean</td>
-              <td>{{ benchmark.stats.mean | round | e }}ms</td>
-            </tr>
-            <tr>
-              <td>Q0</td>
-              <td>{{ benchmark.stats.q0 | round | e }}ms</td>
-            </tr>
-            <tr>
-              <td>Q50</td>
-              <td>{{ benchmark.stats.q50 | round | e }}ms</td>
-            </tr>
-            <tr>
-              <td>Q95</td>
-              <td>{{ benchmark.stats.q95 | round | e }}ms</td>
-            </tr>
-            <tr>
-              <td>Q100</td>
-              <td>{{ benchmark.stats.q100 | round | e }}ms</td>
-            </tr>
-          </tbody>
-        </table>
-        <br />
-        <figure>
-          <img src="{{ benchmark.plot | b64_img }}" />
-        </figure>
-      </section>
-      {% endfor %}
-    </main>
-  </body>
-</html>
+# Benchmarks
+
+{% for benchmark in BENCHMARKS %}
+
+---
+
+### {{ benchmark.framework }}
+
+**{{ benchmark.data_file }}**
+
+| Key         | Value                        |
+| ----------- | ---------------------------- |
+| Completions | {{ benchmark.stats.items }}  |
+| Mean        | {{ benchmark.stats.mean }}ms |
+| Q0          | {{ benchmark.stats.q0 }}ms   |
+| Q50         | {{ benchmark.stats.q50 }}ms  |
+| Q95         | {{ benchmark.stats.q95 }}ms  |
+| Q100        | {{ benchmark.stats.q100 }}ms |
+
+<img src="{{ benchmark.plot | b64_img }}" />
+
+{% endfor %}
