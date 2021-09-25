@@ -32,4 +32,5 @@ COPY ./fs /
 RUN python3 -m code.prep
 
 
+VOLUME [ "/dump" ]
 ENTRYPOINT [ "python3", "-m", "code.benchmark" ]

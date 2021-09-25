@@ -1,20 +1,27 @@
 from argparse import ArgumentParser
 from asyncio import run
+from base64 import encodebytes
 from dataclasses import dataclass
 from json import dumps
 from locale import strxfrm
-from pathlib import PurePath
+from mimetypes import guess_type
+from os.path import sep
+from pathlib import Path, PurePath
 from statistics import NormalDist
 from sys import exit
 from tempfile import mkdtemp
 from typing import Sequence
 
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from std2.asyncio.subprocess import call
 from std2.locale import pathsort_key
 from std2.pickle import new_encoder
 
 from .benchmarks import benchmarks as bench
 from .types import Benchmark
+
+_TOP_LEVEL = Path(__file__).resolve().parent
+_DUMP = Path(sep) / "dump" / "index.html"
 
 
 @dataclass(frozen=True)
@@ -38,8 +45,27 @@ class _Yaml:
     benchmarks: Sequence[Benchmark]
 
 
+async def b64_img(path: str) -> str:
+    blob = Path(path).read_bytes()
+    mime, _ = guess_type(path)
+    assert mime
+    b64 = encodebytes(blob).decode()
+    encoded = f"data:{mime};base64, {b64}"
+    return encoded
+
+
 async def _dump(yaml: _Yaml) -> None:
     encode = new_encoder[_Yaml](_Yaml)
+    j2 = Environment(
+        enable_async=False,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        undefined=StrictUndefined,
+        loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
+    )
+    j2.filters = {**j2.filters, b64_img.__qualname__: b64_img}
+    html = j2.get_template("index.html").render({"BENCHMARKS": _Yaml.benchmarks})
+
     encoded = encode(yaml)
     json = dumps(encoded, check_circular=False, ensure_ascii=False)
     await call(
@@ -49,6 +75,7 @@ async def _dump(yaml: _Yaml) -> None:
         capture_stdout=False,
         stdin=json.encode(),
     )
+    _DUMP.write_text(html)
 
 
 def _parse_args() -> _Args:

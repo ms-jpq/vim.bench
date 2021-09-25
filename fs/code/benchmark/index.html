@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vim.Bench!</title>
+  </head>
+  <body>
+    <main>
+      {% for benchmark in BENCHMARKS %}
+      <hr />
+      <section>
+        <h2>{{ benchmark.framework | e }}</h2>
+        <h3>{{ benchmark.data_file | e }}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Completions</td>
+              <td>{{ benchmark.items | e }}</td>
+            </tr>
+            <tr>
+              <td>Mean</td>
+              <td>{{ benchmark.mean | round | e }}ms</td>
+            </tr>
+            <tr>
+              <td>Q0</td>
+              <td>{{ benchmark.q0 | round | e }}ms</td>
+            </tr>
+            <tr>
+              <td>Q50</td>
+              <td>{{ benchmark.q0 | round | e }}ms</td>
+            </tr>
+            <tr>
+              <td>Q95</td>
+              <td>{{ benchmark.q0 | round | e }}ms</td>
+            </tr>
+            <tr>
+              <td>Q100</td>
+              <td>{{ benchmark.q0 | round | e }}ms</td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <figure>
+          <img src="{{ benchmark.plot | b64_img }}" />
+        </figure>
+      </section>
+      {% endfor %}
+    </main>
+  </body>
+</html>
