@@ -93,6 +93,16 @@ async def _comp_nvim() -> None:
     await gather(*map(_pack, uris))
 
 
+async def _ddc() -> None:
+    uris = {
+        "https://github.com/vim-denops/denops.vim",
+        "https://github.com/Shougo/ddc.vim",
+        "https://github.com/Shougo/ddc-around",
+        "https://github.com/Shougo/ddc-matcher_head",
+        "https://github.com/Shougo/ddc-sorter_rank",
+    }
+
+
 async def _ncm() -> None:
     uris = {
         "https://github.com/roxma/nvim-yarp",
@@ -119,6 +129,7 @@ async def main() -> int:
         _cmp(),
         _compe(),
         _comp_nvim(),
+        _ddc(),
         _ncm(),
         _repos(),
     )

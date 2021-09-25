@@ -16,6 +16,7 @@ RUN apt update && \
     git \
     python3-venv \
     nodejs
+RUN curl -fsSL https://deno.land/x/install/install.sh | sh
 
 
 RUN python3 -m venv /venv && \
