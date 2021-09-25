@@ -64,7 +64,7 @@ async def _dump(yaml: _Yaml) -> None:
         loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
     )
     j2.filters = {**j2.filters, b64_img.__qualname__: b64_img}
-    html = j2.get_template("index.html").render({"BENCHMARKS": _Yaml.benchmarks})
+    html = j2.get_template("index.html").render({"BENCHMARKS": yaml.benchmarks})
 
     encoded = encode(yaml)
     json = dumps(encoded, check_circular=False, ensure_ascii=False)
