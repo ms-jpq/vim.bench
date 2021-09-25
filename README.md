@@ -4,9 +4,13 @@ Automated reproducible completion framework benchmarking suite for nvim.
 
 This whole thing runs inside Docker, so anybody can reproduce it easily.
 
+Fair and balanced
+
 ---
 
 ## Methodology
+
+Note: for all "randomness", they are generated from the same seed for each run, and therefore "fair".
 
 ### Input
 
@@ -14,11 +18,9 @@ This whole thing runs inside Docker, so anybody can reproduce it easily.
 
 The words typed are _naive tokens_ from parsing current document into (alphanum + "\_") delimited by whitespaces and symbols.
 
-This tokenization should work fairly well for **c family** of languages, which are widely used.
+This tokenization should work fairly well for **c family** of languages, which are the industry standard.
 
-The uniform distribution of spaces and lineseps is also generated from the same buffer.
-
-Note. the same seed is used to generate reproducible randomness.
+A uniform distribution of whitespaces is also generated from the same buffer.
 
 ### Measurement
 
@@ -26,9 +28,7 @@ n keystrokes of `--samples` is performed.
 
 ### Speed
 
-Using `--avg-word-len`, `--wpm` and `--variance`, a Normal distribution is constructed of the desired delay between keystrokes.
-
-Samples are taken from the distribution, using the same seed each time.
+Using `--avg-word-len`, `--wpm` and `--variance`, a Normal Distribution is constructed of the desired delay between keystrokes.
 
 ### Data
 
@@ -36,7 +36,9 @@ See `./fs/data/`
 
 ### Modularity
 
-Some frameworks will have bydefault, very little sources enabled, if any. Other ones will come with more out of the box.
+Some frameworks will have by default, very little sources enabled, if any.
+
+Other ones will come with more out of the box.
 
 For a fair comparison: All frameworks tested will have to following enabled, on top of whatever else they come enabled by default:
 
@@ -70,15 +72,17 @@ Streaming completion is very good for time to first result (_TTFR_), but it pres
 
 While the fast sources will return right away, the slower ones might never make it before the next keystroke.
 
-This has the funny effect of removing the influence of slower sources entirely, which is disastrous for study integrity.
+This has the funny effect of removing the influence of slower sources entirely, which is _disastrous_ for study integrity.
 
-The mitigation is actually to set the script to **type unrealistically slow**, enough so that the LSP servers can catch up, which is quite unfortunate.
+The mitigation is actually to **set typing speed unrealistically slow**, enough so that we have confidence that the LSP servers can catch up.
+
+This is obviously not ideal.
 
 ### Fast on paper != fast IRL
 
-The most responsive frameworks are not necessarily the fastest ones, because **humans still have to pick the results**.
+The most responsive frameworks are not necessarily the fastest ones, because **humans still have to choose the results**.
 
-For example the streaming completion approach actually has severe trade offs infavor of faster _TTFR_:
+For example the streaming completion approach actually has **severe trade offs** infavor of faster _TTFR_:
 
 #### Ranking
 
@@ -100,12 +104,14 @@ Sending too many results in early batches from likely inferior sources will wast
 
 #### Clarity on when / if results will come in
 
-Having streaming completions also means that the framework is likely to inadvertently train the users to wait for more complex and therefore slower sources.
+This is a HCI thing:
 
-### Conclusion
+Having higher quality results come in slower is likely to inadvertently train users to wait for them. This is evidently bad for input speed.
 
-There is never going to be a closed form solution to "what is the fastest framework", because of the trade offs outlined above.
+## Conclusion
+
+There is never going to be a closed form solution to "what is the fastest framework", because of the trade offs detailed above.
 
 A toy example of a degenerate framework that returns a single fixed `👌` emoji will probably beat anything out there in terms of raw speed, but it is utterly useless.
 
-**The results of this repo must be considered alongside inextricably human measure to be useful**
+Before you reach your own conclusion, the results of this repo **must be considered alongside inextricably human measure**.
