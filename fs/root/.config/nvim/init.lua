@@ -10,6 +10,18 @@ TIMER = {}
 
 local acc = {}
 
+TIMER.start = function()
+  vim.api.nvim_buf_attach(
+    0,
+    false,
+    {
+      on_lines = function()
+        TIMER.mark = vim.loop.now()
+      end
+    }
+  )
+end
+
 TIMER.done = function()
   local span = vim.loop.now() - TIMER.mark
   local info = vim.fn.complete_info()
