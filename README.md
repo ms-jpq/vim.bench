@@ -80,7 +80,7 @@ There is **no good way** to measure _real speed_ across frameworks, raw numbers 
 
 #### Streaming completion
 
-Streaming completion is very good for time to first result (_TTFR_), but it presents us with an issue:
+Streaming completion is very good for time to first result _(TTFR)_, but it presents us with an issue:
 
 While the fast sources will return right away, the slower ones might never make it before the next keystroke.
 
