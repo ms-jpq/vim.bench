@@ -106,7 +106,7 @@ Sending too many results in early batches from likely inferior sources will wast
 
 This is a HCI thing:
 
-Having higher quality results come in slower is likely to inadvertently train users to wait for them. This is evidently bad for input speed.
+Having higher quality results come in slower is likely to **inadvertently train users** to wait for them. This is evidently bad for input speed.
 
 ## Conclusion
 
