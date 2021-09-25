@@ -1,11 +1,13 @@
+from hashlib import md5
 from pathlib import PurePath
+from posixpath import normcase
 from statistics import fmean, stdev
 from typing import Sequence
 
 from seaborn import kdeplot
 from std2.statistics import quantiles
 
-from .types import Stats
+from .types import Instruction, Stats
 
 
 def stats(sample: Sequence[float]) -> Stats:
@@ -23,11 +25,11 @@ def stats(sample: Sequence[float]) -> Stats:
     return stats
 
 
-def plot(
-    cwd: PurePath, framework: str, method: str, sample: Sequence[float]
-) -> PurePath:
-    title = f"{framework} :: {method}"
-    path = (cwd / title).with_suffix(".png")
+def plot(cwd: PurePath, inst: Instruction, sample: Sequence[float]) -> PurePath:
+    title = f"{inst.framework} :: {inst.method}"
+    path = (
+        cwd / md5((title + normcase(inst.test_file)).encode()).hexdigest()
+    ).with_suffix(".png")
     plot = kdeplot(data=sample)
     plot.set(title=title, xlabel="ms")
     plot.get_figure().savefig(path)
