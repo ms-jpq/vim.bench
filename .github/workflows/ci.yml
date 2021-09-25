@@ -24,4 +24,4 @@ jobs:
         run: mypy -- .
 
       - name: Test
-        run: ./run.sh
+        run: docker buildx build -- .
