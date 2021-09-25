@@ -15,7 +15,7 @@ TIMER.start = function()
     false,
     {
       on_lines = function()
-        TIMER.mark = vim.loop.now()
+        TIMER.mark = vim.fn.localtime()
       end
     }
   )
@@ -23,7 +23,7 @@ end
 
 local comp = vim.fn.complete
 vim.fn.complete = function(...)
-  local span = vim.loop.now() - TIMER.mark
+  local span = vim.fn.localtime() - TIMER.mark
   table.insert(TIMER.acc, span)
   comp(...)
 end
