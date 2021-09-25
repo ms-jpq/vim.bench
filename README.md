@@ -1,6 +1,6 @@
 # Nvim.Bench
 
-Reproducible completion framework benchmarks.
+Reproducible nvim completion framework benchmarks.
 
 Runs inside Docker. Fair and balanced
 
