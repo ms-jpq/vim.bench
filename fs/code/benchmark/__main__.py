@@ -26,7 +26,7 @@ class _Args:
 
 
 @dataclass(frozen=True)
-class _KPS:
+class _Norm:
     mu: float
     sigma: float
 
@@ -34,7 +34,7 @@ class _KPS:
 @dataclass(frozen=True)
 class _Yaml:
     args: _Args
-    keys_per_second: _KPS
+    feed_delay: _Norm
     benchmarks: Sequence[Benchmark]
 
 
@@ -96,7 +96,7 @@ async def main() -> int:
 
     yaml = _Yaml(
         args=args,
-        keys_per_second=_KPS(mu=mu, sigma=sigma),
+        feed_delay=_Norm(mu=mu * 1000, sigma=sigma * 1000),
         benchmarks=ordered,
     )
     await _dump(yaml)
