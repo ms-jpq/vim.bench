@@ -45,7 +45,7 @@ class _Yaml:
     benchmarks: Sequence[Benchmark]
 
 
-async def b64_img(path: str) -> str:
+def b64_img(path: str) -> str:
     blob = Path(path).read_bytes()
     mime, _ = guess_type(path)
     assert mime
