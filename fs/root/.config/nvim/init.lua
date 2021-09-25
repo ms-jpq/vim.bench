@@ -7,7 +7,7 @@ lsp.tsserver.setup {}
 print(vim.env.TST_FRAMEWORK .. " >>> " .. vim.env.TST_METHOD)
 
 local time = function()
-  return vim.fn.reltimefloat(vim.fn.reltime()) * 1000
+  return vim.fn.reltimefloat(vim.fn.reltime())
 end
 
 TIMER = {}
@@ -27,7 +27,7 @@ end
 
 local comp = vim.fn.complete
 vim.fn.complete = function(...)
-  local span = time() - TIMER.mark
+  local span = (time() - TIMER.mark) * 1000
   table.insert(TIMER.acc, span)
   comp(...)
 end
