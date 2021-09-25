@@ -52,9 +52,7 @@ No default sources will be disabled, because users don't tend to do that.
 
 ---
 
-## Cool, pictures
-
-[Here it is!](https://github.com/ms-jpq/vim.bench/tree/main/plots)
+## [Cool, pictures](https://github.com/ms-jpq/vim.bench/tree/main/plots)
 
 The plots are [kernel density estimations](https://en.wikipedia.org/wiki/Kernel_density_estimation), have no idea why they fitted more than 1 curve for some plots.
 
