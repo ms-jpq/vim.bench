@@ -12,6 +12,7 @@
 | ----------- | ---------------------------- |
 | Completions | {{ benchmark.stats.items }}  |
 | Mean        | {{ benchmark.stats.mean }}ms |
+| STD         | {{ benchmark.stats.std }}ms  |
 | Q0          | {{ benchmark.stats.q0 }}ms   |
 | Q50         | {{ benchmark.stats.q50 }}ms  |
 | Q95         | {{ benchmark.stats.q95 }}ms  |
