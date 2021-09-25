@@ -15,7 +15,7 @@ tests:
       - coq/server/edit.py
   - cwd: /data/lsp/create-react-app
     files:
-      - create-react-app/packages/create-react-app/createReactApp.js
+      - packages/create-react-app/createReactApp.js
 
 repos:
   - https://github.com/ms-jpq/coq_nvim
