@@ -93,7 +93,7 @@ async def benchmarks(
         )
         feed = zip(norm.samples(samples, seed=seed), gen)
 
-        out = await tmux(debug, inst=inst, feed=feed)
+        out = await tmux(inst, feed=feed)
         json = loads(out.read_text())
         sample = decode(json)
 
