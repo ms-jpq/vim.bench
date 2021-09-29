@@ -17,9 +17,7 @@ _SHORT = 0.1
 _LONG = 1
 
 
-async def tmux(
-    debug: bool, inst: Instruction, feed: Iterable[Tuple[float, str]]
-) -> Path:
+async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
     tmp = Path(mkdtemp())
     sock, t_out = tmp / str(uuid4()), tmp / str(uuid4())
 
@@ -46,7 +44,7 @@ async def tmux(
         else:
             await sleep(0)
 
-    if not debug:
+    if not inst.debug:
         t0 = 0.0
         for delay, chars in chain(zip(repeat(_SHORT), "Go"), feed):
             with timeit() as t:

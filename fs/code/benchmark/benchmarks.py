@@ -6,6 +6,7 @@ from os import linesep
 from pathlib import Path, PurePath
 from random import Random
 from statistics import NormalDist
+from tempfile import NamedTemporaryFile
 from typing import AsyncIterator, Iterator, MutableSequence, Sequence
 from uuid import uuid4
 
@@ -24,17 +25,29 @@ class _Parsed:
     ws: Sequence[str]
 
 
-def _cartesian() -> Iterator[Instruction]:
-    spec = specs()
-    for framework, test in product(spec.frameworks, spec.tests):
-        for path in test.files:
-            file = test.cwd / path
-            inst = Instruction(
-                framework=framework,
-                cwd=test.cwd,
-                test_file=file,
-            )
-            yield inst
+def _cartesian(debug: bool) -> Iterator[Instruction]:
+    if debug:
+        with NamedTemporaryFile(delete=False) as fd:
+            test_file = Path(fd.name)
+        inst = Instruction(
+            debug=debug,
+            framework="noop",
+            cwd=PurePath(),
+            test_file=test_file,
+        )
+        yield inst
+    else:
+        spec = specs()
+        for framework, test in product(spec.frameworks, spec.tests):
+            for path in test.files:
+                file = test.cwd / path
+                inst = Instruction(
+                    debug=debug,
+                    framework=framework,
+                    cwd=test.cwd,
+                    test_file=file,
+                )
+                yield inst
 
 
 @lru_cache(maxsize=None)
@@ -67,7 +80,7 @@ def _naive_tokenize(path: Path) -> _Parsed:
 async def benchmarks(
     debug: bool, plot_dir: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
-    cartesian = _cartesian()
+    cartesian = _cartesian(debug)
     decode = new_decoder[Sequence[float]](Sequence[float])
 
     seed = uuid4().bytes

@@ -4,6 +4,7 @@ from pathlib import Path, PurePath
 
 @dataclass(frozen=True)
 class Instruction:
+    debug: bool
     framework: str
     cwd: PurePath
     test_file: Path
