@@ -4,6 +4,7 @@ frameworks:
   - coc
   - cmp
   - compe
+  - comp_nvim
 
 tests:
   - cwd: /data/buffers
