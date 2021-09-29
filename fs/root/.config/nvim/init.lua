@@ -26,9 +26,9 @@ TIMER.start = function()
 end
 
 TIMER.done = function()
+  local span = (time() - TIMER.mark) * 1000
   local info = vim.fn.complete_info {"mode", "pum_visible"}
-  if info.mode == "eval" and info.pum_visible then
-    local span = (time() - TIMER.mark) * 1000
+  if info.mode == "eval" and info.pum_visible and span >= 1 then
     table.insert(TIMER.acc, span)
   end
 end
