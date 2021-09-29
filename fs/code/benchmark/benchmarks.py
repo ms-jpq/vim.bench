@@ -7,7 +7,7 @@ from pathlib import Path, PurePath
 from random import Random
 from statistics import NormalDist
 from tempfile import NamedTemporaryFile
-from typing import AsyncIterator, Iterator, MutableSequence, Sequence
+from typing import AsyncIterator, Iterator, MutableSequence, Optional, Sequence
 from uuid import uuid4
 
 from std2.pickle import new_decoder
@@ -25,13 +25,13 @@ class _Parsed:
     ws: Sequence[str]
 
 
-def _cartesian(debug: bool) -> Iterator[Instruction]:
+def _cartesian(debug: Optional[str]) -> Iterator[Instruction]:
     if debug:
         with NamedTemporaryFile(delete=False) as fd:
             test_file = Path(fd.name)
         inst = Instruction(
-            debug=debug,
-            framework="noop",
+            debug=True,
+            framework=debug,
             cwd=PurePath(),
             test_file=test_file,
         )
@@ -42,7 +42,7 @@ def _cartesian(debug: bool) -> Iterator[Instruction]:
             for path in test.files:
                 file = test.cwd / path
                 inst = Instruction(
-                    debug=debug,
+                    debug=False,
                     framework=framework,
                     cwd=test.cwd,
                     test_file=file,
@@ -78,7 +78,7 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
 
 async def benchmarks(
-    debug: bool, plot_dir: PurePath, norm: NormalDist, samples: int
+    debug: str, plot_dir: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
     cartesian = _cartesian(debug)
     decode = new_decoder[Sequence[float]](Sequence[float])

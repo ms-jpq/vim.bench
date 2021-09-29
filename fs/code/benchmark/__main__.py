@@ -8,7 +8,7 @@ from os.path import sep
 from pathlib import Path, PurePath
 from statistics import NormalDist
 from sys import exit
-from typing import Sequence
+from typing import Optional, Sequence
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from std2.asyncio.subprocess import call
@@ -24,7 +24,7 @@ _DUMP = Path(sep) / "dump"
 
 @dataclass(frozen=True)
 class _Args:
-    debug: bool
+    debug: Optional[str]
     samples: int
     wpm: int
     avg_word_len: int
@@ -75,7 +75,7 @@ async def _dump(yaml: _Yaml) -> None:
 
 def _parse_args() -> _Args:
     parser = ArgumentParser()
-    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--debug")
     parser.add_argument("--samples", type=int, default=99)
     parser.add_argument("--wpm", type=int, default=20)
     parser.add_argument("--avg-word-len", type=int, default=9)

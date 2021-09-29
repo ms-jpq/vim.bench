@@ -101,6 +101,7 @@ async def _ddc() -> None:
         "https://github.com/Shougo/ddc-matcher_head",
         "https://github.com/Shougo/ddc-sorter_rank",
     }
+    # await gather(*map(_pack, uris))
 
 
 async def _ncm() -> None:
