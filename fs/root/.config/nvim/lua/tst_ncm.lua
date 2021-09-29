@@ -1,1 +1,1 @@
-vim.cmd [[ncm2#enable_for_buffer()]]
+vim.fn["ncm2#enable_for_buffer"]()

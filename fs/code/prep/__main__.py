@@ -111,7 +111,10 @@ async def _ncm() -> None:
         "https://github.com/ncm2/ncm2-bufword",
         "https://github.com/ncm2/ncm2-path",
     }
-    await gather(*map(_pack, uris))
+    await gather(
+        call("python3", "-m", "pip", "install", "--", "pynvim"),
+        *map(_pack, uris),
+    )
 
 
 async def _repos() -> None:

@@ -20,9 +20,7 @@ RUN apt update && \
 RUN curl -fsSL https://deno.land/x/install/install.sh | sh
 
 
-RUN python3 -m venv /venv && \
-    python3 -m venv /srv/venv
-
+RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH" \
     TERM=xterm-256color
 

@@ -1,1 +1,5 @@
-vim.cmd [[packadd coc.nvim]]
+vim.schedule(
+  function()
+    vim.cmd [[packadd coc.nvim]]
+  end
+)
