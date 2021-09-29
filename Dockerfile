@@ -11,6 +11,7 @@ RUN apt update && \
 COPY ./fs/etc /etc
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --yes -- \
+    zip \
     tmux \
     neovim \
     git \

@@ -24,7 +24,7 @@ end
 TIMER.done = function()
   local info = vim.fn.complete_info {"mode", "pum_visible"}
   if info.mode == "eval" and info.pum_visible then
-    local span = (vim.loop.now() - TIMER.mark) * 1000
+    local span = (vim.loop.now() - TIMER.mark)
     table.insert(TIMER.acc, span)
   end
 end
