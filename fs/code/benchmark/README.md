@@ -18,6 +18,6 @@
 | Q95         | {{ benchmark.stats.q95 }}ms  |
 | Q100        | {{ benchmark.stats.q100 }}ms |
 
-![fig.img]({{ benchmark.plot | img_path }})
+![fig.img]({{ "./" ~ benchmark.plot }})
 
 {% endfor %}

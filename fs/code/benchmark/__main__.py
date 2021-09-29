@@ -44,11 +44,6 @@ class _Yaml:
     benchmarks: Sequence[Benchmark]
 
 
-def img_path(path: str) -> str:
-    prefix = environ.get("PUBLISH_URL", "./")
-    return prefix + PurePath(path).name
-
-
 async def _dump(yaml: _Yaml) -> None:
     encode = new_encoder[_Yaml](_Yaml)
     j2 = Environment(
@@ -58,7 +53,6 @@ async def _dump(yaml: _Yaml) -> None:
         undefined=StrictUndefined,
         loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
     )
-    j2.filters = {**j2.filters, img_path.__qualname__: img_path}
     rendered = j2.get_template("README.md").render({"BENCHMARKS": yaml.benchmarks})
 
     encoded = encode(yaml)
