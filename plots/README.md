@@ -17,7 +17,7 @@
 | Q95         | 84ms  |
 | Q100        | 121ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/c6426ab57e802fa08dcffe99fbfeac14.png)
+![fig.img](./c6426ab57e802fa08dcffe99fbfeac14.png)
 
 
 ---
@@ -36,7 +36,7 @@
 | Q95         | 94ms  |
 | Q100        | 134ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/78cc3e419d8cc2f802e43d486be1fb4f.png)
+![fig.img](./78cc3e419d8cc2f802e43d486be1fb4f.png)
 
 
 ---
@@ -55,7 +55,7 @@
 | Q95         | 100ms  |
 | Q100        | 197ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/58dd12a5c42471f3e2e23eec0c8f0800.png)
+![fig.img](./58dd12a5c42471f3e2e23eec0c8f0800.png)
 
 
 ---
@@ -74,7 +74,7 @@
 | Q95         | 239ms  |
 | Q100        | 312ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/bc190c7ef28b48a0f7c19b0b8622951d.png)
+![fig.img](./bc190c7ef28b48a0f7c19b0b8622951d.png)
 
 
 ---
@@ -93,7 +93,7 @@
 | Q95         | 186ms  |
 | Q100        | 323ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/21b9d82fd3a81ea3309e1d5ea8b54945.png)
+![fig.img](./21b9d82fd3a81ea3309e1d5ea8b54945.png)
 
 
 ---
@@ -112,7 +112,7 @@
 | Q95         | 124ms  |
 | Q100        | 126ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/d6c577cf11f50485e670588f497d2c50.png)
+![fig.img](./d6c577cf11f50485e670588f497d2c50.png)
 
 
 ---
@@ -131,7 +131,7 @@
 | Q95         | 139ms  |
 | Q100        | 160ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/ae946b7db85ca3a949abe2065096a051.png)
+![fig.img](./ae946b7db85ca3a949abe2065096a051.png)
 
 
 ---
@@ -150,7 +150,7 @@
 | Q95         | 156ms  |
 | Q100        | 176ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/3632ec4f899dc310bbcd681a84d47fdc.png)
+![fig.img](./3632ec4f899dc310bbcd681a84d47fdc.png)
 
 
 ---
@@ -169,7 +169,7 @@
 | Q95         | 123ms  |
 | Q100        | 163ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/33951bb536765add01c7bcc6666fa47a.png)
+![fig.img](./33951bb536765add01c7bcc6666fa47a.png)
 
 
 ---
@@ -188,7 +188,7 @@
 | Q95         | 127ms  |
 | Q100        | 130ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/d1830fa764c681a6269d3796738bba80.png)
+![fig.img](./d1830fa764c681a6269d3796738bba80.png)
 
 
 ---
@@ -207,7 +207,7 @@
 | Q95         | 71ms  |
 | Q100        | 82ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/b5a0628258631a855e2b954dce9d61b7.png)
+![fig.img](./b5a0628258631a855e2b954dce9d61b7.png)
 
 
 ---
@@ -226,7 +226,7 @@
 | Q95         | 107ms  |
 | Q100        | 117ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/ad82d296990a5c5c2557f2e7af158e63.png)
+![fig.img](./ad82d296990a5c5c2557f2e7af158e63.png)
 
 
 ---
@@ -245,7 +245,7 @@
 | Q95         | 121ms  |
 | Q100        | 161ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/675da12f4bded28a8a71ca93d7911b30.png)
+![fig.img](./675da12f4bded28a8a71ca93d7911b30.png)
 
 
 ---
@@ -264,7 +264,7 @@
 | Q95         | 162ms  |
 | Q100        | 241ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/77d454f58a6c11696a39a2b4a31ad13f.png)
+![fig.img](./77d454f58a6c11696a39a2b4a31ad13f.png)
 
 
 ---
@@ -283,5 +283,5 @@
 | Q95         | 154ms  |
 | Q100        | 254ms |
 
-![fig.img](https://raw.githubusercontent.com/ms-jpq/vim.bench/main/plots/3b523c9b210a67f020683294edb06b04.png)
+![fig.img](./3b523c9b210a67f020683294edb06b04.png)
 
