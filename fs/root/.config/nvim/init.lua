@@ -6,6 +6,10 @@ lsp.tsserver.setup {}
 
 print(">>>" .. vim.env.TST_FRAMEWORK .. "<<<")
 
+local time = function()
+  return vim.fn.reltimefloat(vim.fn.reltime())
+end
+
 TIMER = {}
 TIMER.acc = {}
 
@@ -15,7 +19,7 @@ TIMER.start = function()
     false,
     {
       on_lines = function()
-        TIMER.mark = vim.loop.now()
+        TIMER.mark = time()
       end
     }
   )
@@ -24,7 +28,7 @@ end
 TIMER.done = function()
   local info = vim.fn.complete_info {"mode", "pum_visible"}
   if info.mode == "eval" and info.pum_visible then
-    local span = (vim.loop.now() - TIMER.mark)
+    local span = (time() - TIMER.mark) * 1000
     table.insert(TIMER.acc, span)
   end
 end
