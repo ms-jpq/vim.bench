@@ -3,6 +3,7 @@ frameworks:
   - coq
   - coc
   - cmp
+  - compe
 
 tests:
   - cwd: /data/buffers
@@ -18,5 +19,5 @@ tests:
       - packages/create-react-app/createReactApp.js
 
 repos:
-  - https://github.com/ms-jpq/coq_nvim
-  - https://github.com/facebook/create-react-app
+  - uri: https://github.com/ms-jpq/coq_nvim
+  - uri: https://github.com/facebook/create-react-app
