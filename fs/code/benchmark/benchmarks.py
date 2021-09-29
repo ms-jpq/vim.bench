@@ -65,7 +65,7 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
 
 async def benchmarks(
-    plot_dir: PurePath, norm: NormalDist, samples: int
+    debug: bool, plot_dir: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
     cartesian = _cartesian()
     decode = new_decoder[Sequence[float]](Sequence[float])
@@ -80,7 +80,7 @@ async def benchmarks(
         )
         feed = zip(norm.samples(samples, seed=seed), gen)
 
-        out = await tmux(inst, feed=feed)
+        out = await tmux(debug, inst=inst, feed=feed)
         json = loads(out.read_text())
         sample = decode(json)
 

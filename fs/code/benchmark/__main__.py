@@ -24,6 +24,7 @@ _DUMP = Path(sep) / "dump"
 
 @dataclass(frozen=True)
 class _Args:
+    debug: bool
     samples: int
     wpm: int
     avg_word_len: int
@@ -74,12 +75,14 @@ async def _dump(yaml: _Yaml) -> None:
 
 def _parse_args() -> _Args:
     parser = ArgumentParser()
+    parser.add_argument("--debug", action="store_true")
     parser.add_argument("--samples", type=int, default=99)
     parser.add_argument("--wpm", type=int, default=20)
     parser.add_argument("--avg-word-len", type=int, default=9)
     parser.add_argument("--variance", type=float, default=0.15)
     ns = parser.parse_args()
     args = _Args(
+        debug=ns.debug,
         samples=ns.samples,
         wpm=ns.wpm,
         avg_word_len=ns.avg_word_len,
@@ -102,7 +105,10 @@ async def main() -> int:
     norm = NormalDist(mu=mu, sigma=sigma)
 
     benchmarks = [
-        benchmark async for benchmark in bench(_DUMP, norm=norm, samples=args.samples)
+        benchmark
+        async for benchmark in bench(
+            args.debug, plot_dir=_DUMP, norm=norm, samples=args.samples
+        )
     ]
     ordered = sorted(
         benchmarks,

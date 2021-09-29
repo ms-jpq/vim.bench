@@ -17,7 +17,9 @@ _SHORT = 0.1
 _LONG = 1
 
 
-async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
+async def tmux(
+    debug: bool, inst: Instruction, feed: Iterable[Tuple[float, str]]
+) -> Path:
     tmp = Path(mkdtemp())
     sock, t_out = tmp / str(uuid4()), tmp / str(uuid4())
 
@@ -44,47 +46,48 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
         else:
             await sleep(0)
 
-    t0 = 0.0
-    for delay, chars in chain(zip(repeat(_SHORT), "Go"), feed):
-        with timeit() as t:
-            await call(
-                "tmux",
-                "-S",
-                sock,
-                "--",
-                "load-buffer",
-                "-",
-                capture_stderr=False,
-                capture_stdout=False,
-                stdin=chars.encode(),
-            )
-        await sleep(delay - t0 - t())
-        with timeit() as t:
-            await call(
-                "tmux",
-                "-S",
-                sock,
-                "--",
-                "paste-buffer",
-                capture_stderr=False,
-                capture_stdout=False,
-            )
-        t0 = t()
+    if not debug:
+        t0 = 0.0
+        for delay, chars in chain(zip(repeat(_SHORT), "Go"), feed):
+            with timeit() as t:
+                await call(
+                    "tmux",
+                    "-S",
+                    sock,
+                    "--",
+                    "load-buffer",
+                    "-",
+                    capture_stderr=False,
+                    capture_stdout=False,
+                    stdin=chars.encode(),
+                )
+            await sleep(delay - t0 - t())
+            with timeit() as t:
+                await call(
+                    "tmux",
+                    "-S",
+                    sock,
+                    "--",
+                    "paste-buffer",
+                    capture_stderr=False,
+                    capture_stdout=False,
+                )
+            t0 = t()
 
-    await call(
-        "tmux",
-        "-S",
-        sock,
-        "--",
-        "send-keys",
-        "Escape",
-        "Escape",
-        "Escape",
-        ":qa!",
-        "Enter",
-        capture_stderr=False,
-        capture_stdout=False,
-    )
+        await call(
+            "tmux",
+            "-S",
+            sock,
+            "--",
+            "send-keys",
+            "Escape",
+            "Escape",
+            "Escape",
+            ":qa!",
+            "Enter",
+            capture_stderr=False,
+            capture_stdout=False,
+        )
 
     if (code := await proc.wait()) != 0:
         raise CalledProcessError(returncode=code, cmd=args)
