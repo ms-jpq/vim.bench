@@ -1,4 +1,6 @@
 vim.opt.showmode = false
+vim.opt.completeopt = {"noselect", "noinsert", "menuone"}
+vim.opt.shortmess:append("c")
 
 local lsp = require("lspconfig")
 lsp.pyright.setup {}

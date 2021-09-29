@@ -12,7 +12,7 @@ class _TestSpec:
 @dataclass(frozen=True)
 class _Repo:
     uri: str
-    sh: Optional[Sequence[str]]
+    sh: Optional[Sequence[str]] = None
 
 
 @dataclass(frozen=True)

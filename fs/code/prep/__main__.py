@@ -118,8 +118,8 @@ async def _ncm() -> None:
 
 
 async def _repos() -> None:
-    uris = specs().repos
-    await gather(*(_git(_DATA_LSP, uri=uri) for uri in uris))
+    repos = specs().repos
+    await gather(*(_git(_DATA_LSP, uri=repo.uri) for repo in repos))
 
 
 async def main() -> int:
