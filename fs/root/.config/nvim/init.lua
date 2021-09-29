@@ -25,11 +25,12 @@ TIMER.start = function()
   )
 end
 
-local comp = vim.fn.complete
-vim.fn.complete = function(...)
-  local span = (time() - TIMER.mark) * 1000
-  table.insert(TIMER.acc, span)
-  comp(...)
+TIMER.done = function()
+  local info = vim.fn.complete_info {"mode", "pum_visible"}
+  if info.mode == "eval" and info.pum_visible then
+    local span = (time() - TIMER.mark) * 1000
+    table.insert(TIMER.acc, span)
+  end
 end
 
 TIMER.fin = function()
