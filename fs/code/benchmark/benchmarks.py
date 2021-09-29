@@ -78,7 +78,7 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
 
 async def benchmarks(
-    debug: str, plot_dir: PurePath, norm: NormalDist, samples: int
+    debug: Optional[str], plot_dir: PurePath, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
     cartesian = _cartesian(debug)
     decode = new_decoder[Sequence[float]](Sequence[float])
