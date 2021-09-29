@@ -11,11 +11,13 @@ RUN apt update && \
 COPY ./fs/etc /etc
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --yes -- \
+    zip \
     tmux \
     neovim \
     git \
     python3-venv \
     nodejs
+RUN curl -fsSL https://deno.land/x/install/install.sh | sh
 
 
 RUN python3 -m venv /venv && \
