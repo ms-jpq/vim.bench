@@ -36,8 +36,10 @@ TIMER.done = function()
 end
 
 TIMER.fin = function()
-  local json = vim.fn.json_encode(TIMER.acc)
-  vim.fn.writefile({json}, vim.env.TST_OUTPUT)
+  if vim.env.TST_OUTPUT then
+    local json = vim.fn.json_encode(TIMER.acc)
+    vim.fn.writefile({json}, vim.env.TST_OUTPUT)
+  end
 end
 
 require("tst_" .. vim.env.TST_FRAMEWORK)
