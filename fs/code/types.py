@@ -23,6 +23,6 @@ class _Repo:
 
 @dataclass(frozen=True)
 class Specs:
-    repos: AbstractSet[_Repo]
+    repos: Sequence[_Repo]
     frameworks: AbstractSet[str]
     tests: Sequence[_TestSpec]

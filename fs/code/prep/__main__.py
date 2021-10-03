@@ -102,7 +102,14 @@ async def _ddc() -> None:
         "https://github.com/Shougo/ddc-matcher_head",
         "https://github.com/Shougo/ddc-sorter_rank",
     }
-    # await gather(*map(_pack, uris))
+    await gather(*map(_pack, uris))
+
+
+async def _deoplete() -> None:
+    uris = {
+        "https://github.com/Shougo/deoplete.nvim",
+    }
+    await gather(*map(_pack, uris))
 
 
 async def _ncm() -> None:
