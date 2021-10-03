@@ -105,13 +105,6 @@ async def _ddc() -> None:
     await gather(*map(_pack, uris))
 
 
-async def _deoplete() -> None:
-    uris = {
-        "https://github.com/Shougo/deoplete.nvim",
-    }
-    await gather(*map(_pack, uris))
-
-
 async def _ncm() -> None:
     uris = {
         "https://github.com/roxma/nvim-yarp",

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vim.Bench</title>
+  </head>
+  <body>
+    <main>
+      <h1>Vim.Bench</h1>
+      <p>
+        <b>Important!</b> Please see
+        <a>experimental design &amp analysis </a> for how to interpret these
+        statistics.
+      </p>
+      <p>Without context, these numbers are insufficient to draw conclusions</p>
+      <hr />
+      {% for benchmark in benchmarks %}
+      <hr />
+      <section>
+        <h2>{{ benchmark.framework }}</h2>
+        <img alt="pdf.img" src="{{ benchmark.pdf }}" />
+        <details>
+          {% for name, benchmark in benchmarks.items() %}
+          <summary>OK</summary>
+          <img />
+          {% endfor %}
+        </details>
+      </section>
+      {% endfor %}
+    </main>
+  </body>
+</html>
