@@ -1,9 +1,10 @@
 from asyncio import gather, run
 from multiprocessing import cpu_count
 from os.path import sep
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from sys import executable, exit
-from typing import Optional
+from typing import Optional, Sequence
+from urllib.parse import unquote, urlsplit
 
 from std2.asyncio.subprocess import call
 
@@ -119,7 +120,17 @@ async def _ncm() -> None:
 
 async def _repos() -> None:
     repos = specs().repos
-    await gather(*(_git(_DATA_LSP, uri=repo.uri) for repo in repos))
+
+    async def cont(git: str, sh: Optional[Sequence[str]]) -> None:
+        await _git(_DATA_LSP, uri=git)
+        if sh:
+            cwd = _DATA_LSP / PurePosixPath(unquote(urlsplit(git).path)).name
+            await call(
+                *sh,
+                cwd=cwd,
+            )
+
+    await gather(*(cont(repo.uri, sh=repo.sh) for repo in repos))
 
 
 async def main() -> int:

@@ -28,24 +28,21 @@ class _Parsed:
 def _cartesian(debug: Optional[str]) -> Iterator[Instruction]:
     if debug:
         with NamedTemporaryFile(delete=False) as fd:
-            test_file = Path(fd.name)
+            tmp = Path(fd.name)
         inst = Instruction(
-            debug=True,
-            framework=debug,
-            cwd=PurePath(),
-            test_file=test_file,
+            debug=True, framework=debug, cwd=PurePath(), test_file=tmp, token_file=tmp
         )
         yield inst
     else:
         spec = specs()
         for framework, test in product(spec.frameworks, spec.tests):
-            for path in test.files:
-                file = test.cwd / path
+            for tst in test.files:
                 inst = Instruction(
                     debug=False,
                     framework=framework,
                     cwd=test.cwd,
-                    test_file=file,
+                    test_file=test.cwd / tst.src,
+                    token_file=test.cwd / tst.tokens,
                 )
                 yield inst
 
@@ -85,7 +82,7 @@ async def benchmarks(
 
     seed = uuid4().bytes
     for inst in cartesian:
-        parsed = _naive_tokenize(inst.test_file)
+        parsed = _naive_tokenize(inst.token_file)
 
         rand = Random(seed)
         gen = chain.from_iterable(

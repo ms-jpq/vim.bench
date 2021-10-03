@@ -8,6 +8,7 @@ class Instruction:
     framework: str
     cwd: PurePath
     test_file: Path
+    token_file: Path
 
 
 @dataclass(frozen=True)
