@@ -5,20 +5,17 @@ import {
   InsertTextMode,
   createConnection,
 } from "vscode-languageserver/node";
-import { argv, stdin, stdout } from "process";
-import { deepEqual, ok } from "assert";
+import { env, stdin, stdout } from "process";
 
+import { notEqual } from "assert";
 import { randomBytes } from "crypto";
 
-const [, a_len, r_len, a_reps, r_reps] = argv;
-
-deepEqual(a_len, "--word-len");
-const word_len = parseInt(r_len);
-ok(!isNaN(word_len));
-
-deepEqual(a_reps, "--reps");
-const reps = parseInt(r_reps);
-ok(!isNaN(reps));
+const word_len = parseInt(env.LSP_WORD_LEN ?? "");
+notEqual(word_len, NaN);
+const reps = parseInt(env.LSP_REPS ?? "");
+notEqual(reps, NaN);
+const cache = parseInt(env.LSP_CACHE ?? "");
+notEqual(cache, NaN);
 
 const conn = createConnection(stdin, stdout);
 
@@ -42,5 +39,5 @@ const gen = function* (): IterableIterator<CompletionItem> {
   }
 };
 
-conn.onCompletion(() => ({ isIncomplete: true, items: [...gen()] }));
+conn.onCompletion(() => ({ isIncomplete: cache > 0, items: [...gen()] }));
 conn.listen();
