@@ -3,9 +3,8 @@ from asyncio import run
 from dataclasses import dataclass
 from json import dumps
 from locale import strxfrm
-from os import environ
 from os.path import sep
-from pathlib import Path, PurePath
+from pathlib import Path
 from statistics import NormalDist
 from sys import exit
 from typing import Optional, Sequence
@@ -13,7 +12,7 @@ from typing import Optional, Sequence
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from std2.asyncio.subprocess import call
 from std2.locale import pathsort_key
-from std2.pickle import new_encoder
+from std2.pickle.encoder import new_encoder
 
 from .benchmarks import benchmarks as bench
 from .types import Benchmark
@@ -74,6 +73,8 @@ def _parse_args() -> _Args:
     parser.add_argument("--wpm", type=int, default=20)
     parser.add_argument("--avg-word-len", type=int, default=9)
     parser.add_argument("--variance", type=float, default=0.15)
+    parser.add_argument("--lsp-samples", type=int, nargs="+")
+
     ns = parser.parse_args()
     args = _Args(
         debug=ns.debug,

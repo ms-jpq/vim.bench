@@ -21,7 +21,7 @@ const conn = createConnection(stdin, stdout);
 
 const gen = function* (): IterableIterator<CompletionItem> {
   for (let i = 0; i < reps; i++) {
-    const rand = randomBytes(word_len).toString();
+    const rand = randomBytes(word_len).toString("hex");
     yield {
       label: rand,
       kind: CompletionItemKind.Text,
@@ -39,5 +39,10 @@ const gen = function* (): IterableIterator<CompletionItem> {
   }
 };
 
+conn.onInitialize(() => ({
+  capabilities: {
+    completionProvider: {},
+  },
+}));
 conn.onCompletion(() => ({ isIncomplete: cache > 0, items: [...gen()] }));
 conn.listen();

@@ -8,17 +8,27 @@ Runs inside Docker. Fair and balanced
 
 ## Methodology
 
-Note: for all "randomness", they are generated from the same seed for each run, and therefore "fair".
+Note: All "randomness" are generated from the same seed for each run, and therefore "fair".
 
 ### Input
 
 `tmux` is used to send keys to simulate ideal human typing.
 
-The words typed are _naive tokens_ from parsing current document into (alphanum + "\_") delimited by whitespaces and symbols.
+#### Tokens
+
+The words typed are _naive tokens_ from parsing some document into (alphanum + "\_") delimited by whitespaces and symbols.
 
 This tokenization should work fairly well for **c family** of languages, which are the industry standard.
 
-A uniform distribution of whitespaces is also generated from the same buffer.
+A uniform distribution of whitespaces is also generated from the same document.
+
+#### LSP
+
+For LSP sources, due to difficulty of coaxing existing servers into predictable behaviour, a mock LSP is written specifically to spit out predefined results per-response.
+
+This LSP is configurable to have a controlled delay before each response as well as controlled number of items.
+
+A gaussian model is used to generate the two parameters.
 
 ### Measurement
 
@@ -26,7 +36,7 @@ n keystrokes of `--samples` is performed.
 
 ### Speed
 
-Using `--avg-word-len`, `--wpm` and `--variance`, a Normal Distribution is constructed of the desired delay between keystrokes.
+Using `--avg-word-len`, `--wpm` and `--variance`, a normal distribution is constructed of the desired delay between keystrokes.
 
 ### Data
 
@@ -36,7 +46,7 @@ See `./fs/data/`
 
 Some frameworks will have by default, very little sources enabled, if any.
 
-Other ones will come with more out of the box.
+Others will come with more out of the box.
 
 For a fair comparison: All frameworks tested will have to following enabled, on top of whatever else they come enabled by default:
 
@@ -54,9 +64,9 @@ No default sources will be disabled, because users don't tend to do that.
 
 ## [Cool, pictures](https://github.com/ms-jpq/vim.bench/tree/main/plots)
 
-The plots are [kernel density estimations](https://en.wikipedia.org/wiki/Kernel_density_estimation), have no idea why they fitted more than 1 curve for some plots.
+The plots are [kernel density estimations](https://en.wikipedia.org/wiki/Kernel_density_estimation).
 
-I usually use `R`, not used to python ploting. Anyways, they are an estimate of the true [probability density function](https://en.wikipedia.org/wiki/Probability_density_function).
+They are an estimate of the true [probability density function](https://en.wikipedia.org/wiki/Probability_density_function).
 
 ### Q0, 50, 95, 100?
 
@@ -75,6 +85,20 @@ Please keep in mind that this is purely a synthetic benchmark, which definitely 
 There is **no good way** to measure _real speed_ across frameworks, raw numbers here come with big caveats.
 
 ### Study design limitations
+
+#### LSPs do not follow any particular prior distribution
+
+There are two independent dimensions to LSP slowness
+
+1. Waiting for LSP results
+
+2. Parsing of LSP results (ie. some LSPs will require parsing for thousands of rows)
+
+However, due to the diversity and internal complexity of LSP servers, it precludes this study from being able to assume generalizable models for these two parameters.
+
+Consequently, the gaussian model used here is almost certainly not representative of real LSP delays.
+
+Anecdata suggests many LSPs are prone to mostly "good" behaviour, interspersed with occasional "lag spikes", which could indicate some poisson distribution of lag events.
 
 #### Streaming completion
 
