@@ -1,4 +1,4 @@
-# Nvim.Bench
+# Vim.Bench
 
 Reproducible nvim completion framework benchmarks.
 
