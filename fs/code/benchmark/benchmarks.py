@@ -3,19 +3,45 @@ from functools import lru_cache
 from itertools import chain, product
 from json import loads
 from os import linesep
+from os.path import sep
 from pathlib import Path, PurePath
 from random import Random
 from statistics import NormalDist
 from tempfile import NamedTemporaryFile
-from typing import AsyncIterator, Iterator, MutableSequence, Optional, Sequence
+from typing import (
+    AbstractSet,
+    AsyncIterator,
+    Iterator,
+    MutableSequence,
+    Optional,
+    Sequence,
+)
 from uuid import uuid4
 
-from std2.pickle import new_decoder
+from std2.pickle.decoder import new_decoder
+from yaml import safe_load
 
-from ..parse import specs
 from .stats import plot, stats
 from .tmux import tmux
 from .types import Benchmark, Instruction
+
+
+@dataclass(frozen=True)
+class _Test:
+    src: PurePath
+    tokens: PurePath
+
+
+@dataclass(frozen=True)
+class _TestSpec:
+    cwd: Path
+    files: AbstractSet[_Test]
+
+
+@dataclass(frozen=True)
+class _Specs:
+    frameworks: AbstractSet[str]
+    tests: Sequence[_TestSpec]
 
 
 @dataclass(frozen=True)
@@ -23,6 +49,17 @@ class _Parsed:
     text: str
     tot: Sequence[str]
     ws: Sequence[str]
+
+
+_SPECS = Path(sep) / "data" / "specs.yml"
+
+
+def _specs() -> _Specs:
+    decode = new_decoder[_Specs](_Specs)
+    txt = _SPECS.read_text()
+    yaml = safe_load(txt)
+    specs = decode(yaml)
+    return specs
 
 
 def _cartesian(debug: Optional[str]) -> Iterator[Instruction]:
@@ -34,7 +71,7 @@ def _cartesian(debug: Optional[str]) -> Iterator[Instruction]:
         )
         yield inst
     else:
-        spec = specs()
+        spec = _specs()
         for framework, test in product(spec.frameworks, spec.tests):
             for tst in test.files:
                 inst = Instruction(
