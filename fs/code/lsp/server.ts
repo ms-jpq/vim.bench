@@ -6,20 +6,25 @@ import {
   createConnection,
 } from "vscode-languageserver/node";
 import { argv, stdin, stdout } from "process";
+import { deepEqual, ok } from "assert";
 
 import { randomBytes } from "crypto";
 
-const len = 12;
-const count = 12;
+const [, a_len, r_len, a_reps, r_reps] = argv;
+
+deepEqual(a_len, "--word-len");
+const word_len = parseInt(r_len);
+ok(!isNaN(word_len));
+
+deepEqual(a_reps, "--reps");
+const reps = parseInt(r_reps);
+ok(!isNaN(reps));
 
 const conn = createConnection(stdin, stdout);
 
-const gen = function* (
-  len: number,
-  n: number
-): IterableIterator<CompletionItem> {
-  for (let i = 0; i < n; i++) {
-    const rand = randomBytes(len).toString();
+const gen = function* (): IterableIterator<CompletionItem> {
+  for (let i = 0; i < reps; i++) {
+    const rand = randomBytes(word_len).toString();
     yield {
       label: rand,
       kind: CompletionItemKind.Text,
@@ -37,5 +42,5 @@ const gen = function* (
   }
 };
 
-conn.onCompletion(() => ({ isIncomplete: true, items: [...gen(len, count)] }));
+conn.onCompletion(() => ({ isIncomplete: true, items: [...gen()] }));
 conn.listen();
