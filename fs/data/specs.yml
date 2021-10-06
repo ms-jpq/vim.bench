@@ -9,16 +9,26 @@ frameworks:
 tests:
   - cwd: /data/buffers
     files:
-      - 1-short.txt
-      - 2-medium.txt
-      - 3-long.txt
+      - src: 1-short.txt
+        tokens: 1-short.txt
+      - src: 2-medium.txt
+        tokens: 2-medium.txt
+      - src: 3-long.txt
+        tokens: 3-long.txt
+
   - cwd: /data/lsp/coq_nvim
     files:
-      - coq/server/edit.py
+      - src: coq/server/edit.py
+        tokens: coq/server/edit.py
+
   - cwd: /data/lsp/create-react-app
     files:
-      - packages/create-react-app/createReactApp.js
+      - src: packages/create-react-app/createReactApp.js
+        tokens: packages/create-react-app/createReactApp.js
 
 repos:
   - uri: https://github.com/ms-jpq/coq_nvim
+    sh: []
+
   - uri: https://github.com/facebook/create-react-app
+    sh: []

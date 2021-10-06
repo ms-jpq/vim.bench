@@ -4,9 +4,15 @@ from typing import AbstractSet, Optional, Sequence
 
 
 @dataclass(frozen=True)
+class _Test:
+    src: PurePath
+    tokens: PurePath
+
+
+@dataclass(frozen=True)
 class _TestSpec:
     cwd: Path
-    files: AbstractSet[PurePath]
+    files: AbstractSet[_Test]
 
 
 @dataclass(frozen=True)
@@ -17,6 +23,6 @@ class _Repo:
 
 @dataclass(frozen=True)
 class Specs:
-    repos: AbstractSet[_Repo]
+    repos: Sequence[_Repo]
     frameworks: AbstractSet[str]
     tests: Sequence[_TestSpec]
