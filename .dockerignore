@@ -1,3 +1,1 @@
-.venv/
-temp/
-node_modules/
+./.gitignore
