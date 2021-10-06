@@ -1,2 +1,3 @@
 .venv/
 temp/
+node_modules/
