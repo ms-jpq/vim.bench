@@ -1,7 +1,7 @@
 from os.path import sep
 from pathlib import Path
 
-from std2.pickle import new_decoder
+from std2.pickle.decoder import new_decoder
 from yaml import safe_load
 
 from .types import Specs

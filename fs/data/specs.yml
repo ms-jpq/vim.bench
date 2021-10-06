@@ -16,19 +16,7 @@ tests:
       - src: 3-long.txt
         tokens: 3-long.txt
 
-  - cwd: /data/lsp/coq_nvim
+  - cwd: /data/lsp
     files:
-      - src: coq/server/edit.py
-        tokens: coq/server/edit.py
-
-  - cwd: /data/lsp/create-react-app
-    files:
-      - src: packages/create-react-app/createReactApp.js
-        tokens: packages/create-react-app/createReactApp.js
-
-repos:
-  - uri: https://github.com/ms-jpq/coq_nvim
-    sh: []
-
-  - uri: https://github.com/facebook/create-react-app
-    sh: []
+      - src: empty.cljc
+        tokens: empty.cljc

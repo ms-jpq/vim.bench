@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from typing import AbstractSet, Optional, Sequence
+from typing import AbstractSet, Sequence
 
 
 @dataclass(frozen=True)
@@ -16,13 +16,6 @@ class _TestSpec:
 
 
 @dataclass(frozen=True)
-class _Repo:
-    uri: str
-    sh: Optional[Sequence[str]] = None
-
-
-@dataclass(frozen=True)
 class Specs:
-    repos: Sequence[_Repo]
     frameworks: AbstractSet[str]
     tests: Sequence[_TestSpec]
