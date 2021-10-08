@@ -9,7 +9,7 @@ from std2.statistics import quantiles
 
 
 @dataclass(frozen=True)
-class _Stats:
+class Stats:
     items: int
     mean: float
     std: float
@@ -19,11 +19,11 @@ class _Stats:
     q100: float
 
 
-def stats(sample: Sequence[float]) -> _Stats:
+def stats(sample: Sequence[float]) -> Stats:
     mean, std = round(fmean(sample)), round(stdev(sample))
     quads = {key: round(val) for key, val in quantiles(sample, 0, 50, 95, 100).items()}
 
-    stats = _Stats(
+    stats = Stats(
         items=len(sample),
         mean=mean,
         std=std,

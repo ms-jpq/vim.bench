@@ -39,7 +39,7 @@ async def main() -> int:
         benchmark
         async for benchmark in bench(args.debug, norm=norm, samples=args.samples)
     ]
-    dump(benchmarks)
+    await dump(benchmarks)
 
     return 0
 
