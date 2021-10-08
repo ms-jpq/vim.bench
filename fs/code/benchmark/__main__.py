@@ -68,7 +68,7 @@ async def _dump(yaml: _Yaml) -> None:
 
 def _parse_args() -> _Args:
     parser = ArgumentParser()
-    parser.add_argument("--debug")
+    parser.add_argument("--debug", action="store_true")
     parser.add_argument("--samples", type=int, default=99)
     parser.add_argument("--wpm", type=int, default=20)
     parser.add_argument("--avg-word-len", type=int, default=9)

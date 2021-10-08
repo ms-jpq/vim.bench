@@ -3,8 +3,21 @@ vim.opt.completeopt = {"noselect", "noinsert", "menuone"}
 vim.opt.shortmess:append("c")
 
 local lsp = require("lspconfig")
-lsp.pyright.setup {}
-lsp.tsserver.setup {}
+lspconfig.configs.wordbank_ls = {
+  default_config = {
+    cmd = {
+      "/code/lsp/run.sh",
+      "--cache",
+      "--pool",
+      vim.env.TST_LSP_POOL
+    },
+    filetypes = {"clojure"},
+    root_dir = function()
+      return "/"
+    end,
+    settings = {}
+  }
+}
 
 print(">>>" .. vim.env.TST_FRAMEWORK .. "<<<")
 

@@ -43,7 +43,7 @@ async def _coq() -> None:
     uri = "https://github.com/ms-jpq/coq_nvim"
     await _pack(uri)
     await call(
-        Path(executable).resolve(),
+        Path(executable).resolve(strict=True),
         "-m",
         "coq",
         "deps",
@@ -98,7 +98,7 @@ async def _ncm() -> None:
         "https://github.com/ncm2/ncm2-path",
     }
     await gather(
-        call("python3", "-m", "pip", "install", "--", "pynvim"),
+        call(executable, "-m", "pip", "install", "--", "pynvim"),
         *map(_pack, uris),
     )
 
