@@ -39,7 +39,7 @@ class _Tests:
 @dataclass(frozen=True)
 class _Specs:
     typist: _Typist
-    frameworks: AbstractSet[PurePath]
+    frameworks: AbstractSet[str]
     tests: _Tests
 
 

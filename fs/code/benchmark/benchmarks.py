@@ -1,68 +1,56 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from itertools import chain, product
-from json import loads
+from json import dump, loads
 from os import linesep
-from os.path import sep
 from pathlib import Path, PurePath
 from random import Random
 from statistics import NormalDist
 from tempfile import NamedTemporaryFile
-from typing import (
-    AbstractSet,
-    AsyncIterator,
-    Iterator,
-    MutableSequence,
-    Optional,
-    Sequence,
-)
+from typing import AsyncIterator, Iterator, MutableSequence, Sequence, Tuple
 from uuid import uuid4
 
 from std2.pickle.decoder import new_decoder
+from std2.pickle.encoder import new_encoder
 
-
-from .stats import plot, stats
+from .consts import DATA
+from .specs import specs
 from .tmux import tmux
 
 
-
-
-
 @dataclass(frozen=True)
-class _Parsed:
+class _Tokenized:
     text: str
     tot: Sequence[str]
     ws: Sequence[str]
 
 
+@dataclass(frozen=True)
+class _LSProw:
+    delay: float
+    words: Sequence[str]
 
 
+_LSPFeed = Sequence[_LSProw]
 
 
-def _cartesian(debug: Optional[str]) -> Iterator[Instruction]:
-    if debug:
-        with NamedTemporaryFile(delete=False) as fd:
-            tmp = Path(fd.name)
-        inst = Instruction(
-            debug=True, framework=debug, cwd=PurePath(), test_file=tmp, token_file=tmp
-        )
-        yield inst
-    else:
-        spec = _specs()
-        for framework, test in product(spec.frameworks, spec.tests):
-            for tst in test.files:
-                inst = Instruction(
-                    debug=False,
-                    framework=framework,
-                    cwd=test.cwd,
-                    test_file=test.cwd / tst.src,
-                    token_file=test.cwd / tst.tokens,
-                )
-                yield inst
+@dataclass(frozen=True)
+class _Instruction:
+    framework: str
+    file: PurePath
+    tokens: Iterator[Tuple[float, str]]
+    lsp_feed: _LSPFeed
+
+
+@dataclass(frozen=True)
+class Benchmark:
+    framework: str
+    file: PurePath
+    sample: Sequence[float]
 
 
 @lru_cache(maxsize=None)
-def _naive_tokenize(path: Path) -> _Parsed:
+def _naive_tokenize(path: Path) -> _Tokenized:
     unifying = {"_"}
     text = path.read_text()
     lines = text.splitlines()
@@ -84,41 +72,96 @@ def _naive_tokenize(path: Path) -> _Parsed:
 
     tot = tuple(cont())
     ws = " " * (len(tot) - len(lines)) + linesep * len(lines)
-    parsed = _Parsed(text=text, tot=tot, ws=ws)
+    parsed = _Tokenized(text=text, tot=tot, ws=ws)
     return parsed
 
 
+def _token_stream(
+    seed: bytes, norm: NormalDist, samples: int, tokenized: _Tokenized
+) -> Iterator[Tuple[float, str]]:
+    rand = Random(seed)
+    gen = chain.from_iterable(
+        iter(lambda: rand.choice(tokenized.tot) + rand.choice(tokenized.ws), None)
+    )
+    feed = zip(norm.samples(samples, seed=seed), gen)
+    return feed
+
+
+def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruction]:
+    n = 999
+    variance = norm.stdev / norm.mean
+    spec = specs()
+
+    for framework, filename in product(spec.frameworks, spec.tests.buffers):
+        file = DATA / filename
+        tokens = _naive_tokenize(file)
+        stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
+
+        inst = _Instruction(
+            framework=framework,
+            file=file,
+            tokens=stream,
+            lsp_feed=(),
+        )
+        yield inst
+
+    for framework, profile, filename in product(
+        spec.frameworks, spec.tests.lsp.profiles, spec.tests.lsp.files
+    ):
+        file = DATA / filename
+        tokens = _naive_tokenize(file)
+        stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
+
+        def cont() -> Iterator[_LSProw]:
+            rand = Random(seed)
+            norm_delay = NormalDist(mu=profile.delay, sigma=profile.delay * variance)
+            norm_samples = NormalDist(mu=profile.rows, sigma=profile.rows * variance)
+
+            for delay, wcount in zip(
+                norm_delay.samples(n, seed=seed),
+                map(round, norm_samples.samples(n, seed=seed)),
+            ):
+                words = rand.sample(tokens.tot, k=wcount)
+                row = _LSProw(delay=delay, words=words)
+                yield row
+
+        inst = _Instruction(
+            framework=framework,
+            file=file,
+            tokens=stream,
+            lsp_feed=tuple(cont()),
+        )
+        yield inst
+
+
 async def benchmarks(
-    debug: Optional[str], plot_dir: PurePath, norm: NormalDist, samples: int
+    debug: bool, norm: NormalDist, samples: int
 ) -> AsyncIterator[Benchmark]:
-    cartesian = _cartesian(debug)
     decode = new_decoder[Sequence[float]](Sequence[float])
+    encode = new_encoder[_LSPFeed](_LSPFeed)
 
     seed = uuid4().bytes
-    for inst in cartesian:
-        parsed = _naive_tokenize(inst.token_file)
+    for inst in _cartesian(seed, norm=norm, samples=samples):
+        json = encode(inst.lsp_feed)
 
-        rand = Random(seed)
-        gen = chain.from_iterable(
-            iter(lambda: rand.choice(parsed.tot) + rand.choice(parsed.ws), None)
+        with NamedTemporaryFile(mode="w", delete=False) as fd:
+            lsp_input = PurePath(fd.name)
+            dump(json, fd, check_circular=False, ensure_ascii=False)
+
+        out = await tmux(
+            False,
+            framework=inst.framework,
+            test_input=inst.file,
+            lsp_input=lsp_input,
+            feed=inst.tokens,
         )
-        feed = zip(norm.samples(samples, seed=seed), gen)
 
-        out = await tmux(inst, feed=feed)
         json = loads(out.read_text())
         sample = decode(json)
 
-        stat = stats(sample)
-        plotted = plot(
-            dump_into=plot_dir,
-            inst=inst,
-            sample=sample,
-        )
         benchmark = Benchmark(
             framework=inst.framework,
-            data_file=inst.test_file,
-            tokens=len(parsed.tot),
-            stats=stat,
-            plot=plotted,
+            file=inst.file,
+            sample=sample,
         )
         yield benchmark
