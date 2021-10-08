@@ -37,18 +37,24 @@ def _consolidate(
     return consolidated
 
 
-def _trans(benchmarks: Sequence[Benchmark]) -> _Benched:
+def _trans(recurse: bool, benchmarks: Sequence[Benchmark]) -> _Benched:
     samples = tuple(chain.from_iterable(mark.sample for mark in benchmarks))
     stat = stats(samples)
     title = ""
+
     b64_pdf, b64_cdf = b64_plots(title, sample=samples)
+    details = (
+        tuple(_trans(False, benchmarks=(mark,)) for mark in benchmarks)
+        if recurse
+        else ()
+    )
 
     benched = _Benched(
         stats=stat,
         title=title,
         b64_pdf=b64_pdf,
         b64_cdf=b64_cdf,
-        details=(),
+        details=details,
     )
     return benched
 
@@ -64,7 +70,8 @@ async def dump(benchmarks: Iterable[Benchmark]) -> None:
     tpl = j2.get_template("index.html")
 
     benched = {
-        framework: _trans(marks) for framework, marks in _consolidate(benchmarks)
+        framework: _trans(True, benchmarks=marks)
+        for framework, marks in _consolidate(benchmarks)
     }
     rendered = await tpl.render_async({"BENCHMARKS": benched})
 
