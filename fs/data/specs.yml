@@ -1,22 +1,22 @@
 ---
 frameworks:
-  - coq
-  - coc
   - cmp
-  - compe
+  - coc
   - comp_nvim
+  - compe
+  - coq
+  - ddc
+  - ncm
 
 tests:
-  - cwd: /data/buffers
+  buffers:
     files:
-      - src: 1-short.txt
-        tokens: 1-short.txt
-      - src: 2-medium.txt
-        tokens: 2-medium.txt
-      - src: 3-long.txt
-        tokens: 3-long.txt
+      -  1-short.txt
+      -  2-medium.txt
+      -  3-long.txt
+  lsp:
+    rates:
+      - 
+    files: 
+      -  2-medium.txt
 
-  - cwd: /data/lsp
-    files:
-      - src: empty.cljc
-        tokens: empty.cljc
