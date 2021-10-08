@@ -4,8 +4,8 @@ from statistics import NormalDist
 from sys import exit
 
 from .benchmarks import benchmarks as bench
+from .pprn import dump
 from .specs import specs
-
 
 
 def _parse_args() -> Namespace:
@@ -37,10 +37,9 @@ async def main() -> int:
 
     benchmarks = [
         benchmark
-        async for benchmark in bench(
-            args.debug, norm=norm, samples=args.samples
-        )
+        async for benchmark in bench(args.debug, norm=norm, samples=args.samples)
     ]
+    dump(benchmarks)
 
     return 0
 
