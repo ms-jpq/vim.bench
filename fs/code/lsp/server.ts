@@ -1,4 +1,3 @@
-import { Command, Option } from "commander";
 import {
   CompletionItem,
   CompletionItemKind,
@@ -8,6 +7,7 @@ import {
 } from "vscode-languageserver/node";
 import { stdin, stdout } from "process";
 
+import { Command } from "commander";
 import { readFile } from "fs/promises";
 import { setTimeout } from "timers/promises";
 
