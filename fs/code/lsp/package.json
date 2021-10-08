@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "commander": "^8.2.0",
     "vscode-languageserver": "^7.0.0"
   },
   "description": "",

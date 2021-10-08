@@ -5,44 +5,79 @@ import {
   InsertTextMode,
   createConnection,
 } from "vscode-languageserver/node";
-import { env, stdin, stdout } from "process";
+import { stdin, stdout } from "process";
 
-import { notEqual } from "assert";
-import { randomBytes } from "crypto";
+import { Command } from "commander";
+import { readFile } from "fs/promises";
+import { setTimeout } from "timers/promises";
 
-const word_len = parseInt(env.LSP_WORD_LEN ?? "");
-notEqual(word_len, NaN);
-const reps = parseInt(env.LSP_REPS ?? "");
-notEqual(reps, NaN);
-const cache = parseInt(env.LSP_CACHE ?? "");
-notEqual(cache, NaN);
+const gen = ({
+  use_cache,
+  pool,
+}: {
+  use_cache: boolean;
+  pool: readonly [number, readonly string[]][];
+}) => {
+  const conn = createConnection(stdin, stdout);
 
-const conn = createConnection(stdin, stdout);
+  const gen = async function* (): AsyncIterableIterator<
+    IterableIterator<CompletionItem>
+  > {
+    for (const [delay, words] of pool) {
+      await setTimeout(delay);
+      yield (function* () {
+        for (const word of words) {
+          const item: CompletionItem = {
+            label: word,
+            kind: CompletionItemKind.Text,
+            documentation: { kind: "markdown", value: word },
+            deprecated: false,
+            preselect: false,
+            sortText: word,
+            filterText: word,
+            insertText: word,
+            insertTextFormat: InsertTextFormat.PlainText,
+            insertTextMode: InsertTextMode.asIs,
+            command: { title: word, command: word },
+            data: [word, word, word, word, word, word],
+          };
+          yield item;
+        }
+      })();
+    }
+  };
+  const g = gen();
 
-const gen = function* (): IterableIterator<CompletionItem> {
-  for (let i = 0; i < reps; i++) {
-    const rand = randomBytes(word_len).toString("hex");
-    yield {
-      label: rand,
-      kind: CompletionItemKind.Text,
-      documentation: { kind: "markdown", value: rand },
-      deprecated: false,
-      preselect: false,
-      sortText: rand,
-      filterText: rand,
-      insertText: rand,
-      insertTextFormat: InsertTextFormat.PlainText,
-      insertTextMode: InsertTextMode.asIs,
-      command: { title: rand, command: rand },
-      data: [rand, rand, rand, rand, rand, rand],
-    };
-  }
+  conn.onInitialize(() => ({
+    capabilities: {
+      completionProvider: {},
+    },
+  }));
+  conn.onCompletion(async () => ({
+    isIncomplete: !use_cache,
+    items: [...((await g.next()).value ?? [])],
+  }));
+  conn.listen();
 };
 
-conn.onInitialize(() => ({
-  capabilities: {
-    completionProvider: {},
-  },
-}));
-conn.onCompletion(() => ({ isIncomplete: cache > 0, items: [...gen()] }));
-conn.listen();
+const parse_args = () =>
+  new Promise<{ use_cache: boolean; pool_path: string }>((resolve) => {
+    const cmd = new Command();
+    cmd.allowExcessArguments(false);
+
+    cmd.option("--cache");
+    cmd.option("--pool <pool>");
+    cmd.action(({ cache: use_cache, pool: pool_path }) => {
+      resolve({ use_cache, pool_path });
+    });
+    return cmd;
+  });
+
+const main = async () => {
+  const { use_cache, pool_path } = await parse_args();
+  const json = await readFile(pool_path, { encoding: "utf-8" });
+  const pool = JSON.parse(json);
+  gen({ use_cache, pool });
+};
+
+main();
