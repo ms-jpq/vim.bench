@@ -37,6 +37,7 @@ _LSPFeed = Sequence[_LSProw]
 @dataclass(frozen=True)
 class _Instruction:
     framework: str
+    method: str
     file: PurePath
     tokens: Iterator[Tuple[float, str]]
     lsp_feed: _LSPFeed
@@ -45,6 +46,7 @@ class _Instruction:
 @dataclass(frozen=True)
 class Benchmark:
     framework: str
+    method: str
     file: PurePath
     sample: Sequence[float]
 
@@ -93,12 +95,14 @@ def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruc
     spec = specs()
 
     for framework, filename in product(spec.frameworks, spec.tests.buffers):
+        method = "buf"
         file = DATA / filename
         tokens = _naive_tokenize(file)
         stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
 
         inst = _Instruction(
             framework=framework,
+            method=method,
             file=file,
             tokens=stream,
             lsp_feed=(),
@@ -108,6 +112,7 @@ def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruc
     for framework, profile, filename in product(
         spec.frameworks, spec.tests.lsp.profiles, spec.tests.lsp.files
     ):
+        method = f"lsp delay={profile.delay} rows={profile.rows}"
         file = DATA / filename
         tokens = _naive_tokenize(file)
         stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
@@ -127,6 +132,7 @@ def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruc
 
         inst = _Instruction(
             framework=framework,
+            method=method,
             file=file,
             tokens=stream,
             lsp_feed=tuple(cont()),
@@ -161,6 +167,7 @@ async def benchmarks(
 
         benchmark = Benchmark(
             framework=inst.framework,
+            method=inst.method,
             file=inst.file,
             sample=sample,
         )

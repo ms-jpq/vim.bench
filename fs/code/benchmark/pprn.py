@@ -43,7 +43,7 @@ def _trans(recurse: bool, mark: Benchmark, *marks: Benchmark) -> _Benched:
 
     samples = tuple(chain.from_iterable(m.sample for m in benchmarks))
     stat = stats(samples)
-    title = mark.framework if recurse else mark.framework + " :: " + normcase(mark.file)
+    title = mark.framework if recurse else mark.method + " :: " + normcase(mark.file)
 
     b64_pdf, b64_cdf = b64_plots(title, sample=samples)
     details = tuple(_trans(False, mark) for mark in benchmarks) if recurse else ()
