@@ -9,7 +9,7 @@ lspconfig.configs.wordbank_ls = {
       "/code/lsp/run.sh",
       "--cache",
       "--pool",
-      vim.env.TST_LSP_POOL
+      vim.env.TST_LSP_INPUT
     },
     filetypes = {"clojure"},
     root_dir = function()

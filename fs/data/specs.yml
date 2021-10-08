@@ -1,4 +1,10 @@
 ---
+typist:
+  samples: 99
+  wpm: 20
+  avg_word_len: 9
+  variance: 0.15
+
 frameworks:
   - cmp
   - coc
@@ -10,13 +16,18 @@ frameworks:
 
 tests:
   buffers:
-    files:
-      -  1-short.txt
-      -  2-medium.txt
-      -  3-long.txt
+    - ./buffers/1-short.txt
+    - ./buffers/2-medium.txt
+    - ./buffers/3-long.txt
   lsp:
-    rates:
-      - 
-    files: 
-      -  2-medium.txt
+    profiles:
+      - delay: 16
+        rows: 16
+      - delay: 49
+        rows: 888
+      - delay: 0
+        rows: 6666
 
+    cljc: ./lsp/empty.cljc
+    files:
+      - ./buffers/2-medium.txt
