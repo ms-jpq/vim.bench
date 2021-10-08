@@ -71,7 +71,7 @@ const parse_args = () =>
     cmd.action(({ cache: use_cache, pool: pool_path }) => {
       resolve({ use_cache, pool_path });
     });
-    return cmd;
+    cmd.parse();
   });
 
 const main = async () => {
