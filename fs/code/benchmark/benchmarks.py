@@ -149,7 +149,7 @@ async def benchmarks(
             dump(json, fd, check_circular=False, ensure_ascii=False)
 
         out = await tmux(
-            False,
+            debug,
             framework=inst.framework,
             test_input=inst.file,
             lsp_input=lsp_input,
