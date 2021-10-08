@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from .benchmarks import Benchmark
 from .consts import DUMP
+from .stats import b64_plots, stats
 
 _TOP_LEVEL = Path(__file__).resolve().parent
 

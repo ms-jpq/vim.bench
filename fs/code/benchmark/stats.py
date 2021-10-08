@@ -35,7 +35,7 @@ def stats(sample: Sequence[float]) -> _Stats:
     return stats
 
 
-def plot(title: str, sample: Sequence[float]) -> Tuple[str, str]:
+def b64_plots(title: str, sample: Sequence[float]) -> Tuple[str, str]:
     pdf_title, cdf_title = f"pdf -- {title}", f"cdf -- {title}"
     pdf_io, cdf_io = BytesIO(), BytesIO()
 
