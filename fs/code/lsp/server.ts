@@ -14,39 +14,40 @@ import { setTimeout } from "timers/promises";
 const gen = ({
   use_cache,
   pool,
-}: {
+}: Readonly<{
   use_cache: boolean;
-  pool: readonly [number, readonly string[]][];
-}) => {
+  pool: readonly { delay: number; words: readonly string[] }[];
+}>) => {
   const conn = createConnection(stdin, stdout);
 
-  const gen = async function* (): AsyncIterableIterator<
+  const gen = (async function* (): AsyncIterableIterator<
     IterableIterator<CompletionItem>
   > {
-    for (const [delay, words] of pool) {
-      await setTimeout(delay);
-      yield (function* () {
-        for (const word of words) {
-          const item: CompletionItem = {
-            label: word,
-            kind: CompletionItemKind.Text,
-            documentation: { kind: "markdown", value: word },
-            deprecated: false,
-            preselect: false,
-            sortText: word,
-            filterText: word,
-            insertText: word,
-            insertTextFormat: InsertTextFormat.PlainText,
-            insertTextMode: InsertTextMode.asIs,
-            command: { title: word, command: word },
-            data: [word, word, word, word, word, word],
-          };
-          yield item;
-        }
-      })();
+    while (true) {
+      for (const { delay, words } of pool) {
+        await setTimeout(delay);
+        yield (function* () {
+          for (const word of words) {
+            const item: CompletionItem = {
+              label: word,
+              kind: CompletionItemKind.Text,
+              documentation: { kind: "markdown", value: word },
+              deprecated: false,
+              preselect: false,
+              sortText: word,
+              filterText: word,
+              insertText: word,
+              insertTextFormat: InsertTextFormat.PlainText,
+              insertTextMode: InsertTextMode.asIs,
+              command: { title: word, command: word },
+              data: [word, word, word, word, word, word],
+            };
+            yield item;
+          }
+        })();
+      }
     }
-  };
-  const g = gen();
+  })();
 
   conn.onInitialize(() => ({
     capabilities: {
@@ -55,7 +56,7 @@ const gen = ({
   }));
   conn.onCompletion(async () => ({
     isIncomplete: !use_cache,
-    items: [...((await g.next()).value ?? [])],
+    items: [...(await gen.next()).value],
   }));
   conn.listen();
 };
