@@ -8,4 +8,4 @@ shopt -s globstar nullglob
 cd "$(dirname "$0")" || exit 1
 
 
-exec node ./server.js
+exec node ./server.js "$@"

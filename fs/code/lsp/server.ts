@@ -1,3 +1,4 @@
+import { Command, Option } from "commander";
 import {
   CompletionItem,
   CompletionItemKind,
@@ -7,7 +8,6 @@ import {
 } from "vscode-languageserver/node";
 import { stdin, stdout } from "process";
 
-import { Command } from "commander";
 import { readFile } from "fs/promises";
 import { setTimeout } from "timers/promises";
 
@@ -67,7 +67,8 @@ const parse_args = () =>
     cmd.allowExcessArguments(false);
 
     cmd.option("--cache");
-    cmd.option("--pool <pool>");
+    cmd.requiredOption("--pool <pool>");
+
     cmd.action(({ cache: use_cache, pool: pool_path }) => {
       resolve({ use_cache, pool_path });
     });
