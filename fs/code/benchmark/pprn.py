@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from itertools import chain
 from locale import strxfrm
+from os.path import normcase
 from pathlib import Path
 from typing import Iterable, Sequence, Tuple
 
@@ -37,17 +38,15 @@ def _consolidate(
     return consolidated
 
 
-def _trans(recurse: bool, benchmarks: Sequence[Benchmark]) -> _Benched:
-    samples = tuple(chain.from_iterable(mark.sample for mark in benchmarks))
+def _trans(recurse: bool, mark: Benchmark, *marks: Benchmark) -> _Benched:
+    benchmarks = tuple(chain((mark,), marks))
+
+    samples = tuple(chain.from_iterable(m.sample for m in benchmarks))
     stat = stats(samples)
-    title = ""
+    title = mark.framework if recurse else mark.framework + " :: " + normcase(mark.file)
 
     b64_pdf, b64_cdf = b64_plots(title, sample=samples)
-    details = (
-        tuple(_trans(False, benchmarks=(mark,)) for mark in benchmarks)
-        if recurse
-        else ()
-    )
+    details = tuple(_trans(False, mark) for mark in benchmarks) if recurse else ()
 
     benched = _Benched(
         stats=stat,
@@ -59,7 +58,7 @@ def _trans(recurse: bool, benchmarks: Sequence[Benchmark]) -> _Benched:
     return benched
 
 
-async def dump(benchmarks: Iterable[Benchmark]) -> None:
+async def dump(benchmarks: Sequence[Benchmark]) -> None:
     j2 = Environment(
         enable_async=True,
         trim_blocks=True,
@@ -70,8 +69,9 @@ async def dump(benchmarks: Iterable[Benchmark]) -> None:
     tpl = j2.get_template("index.html")
 
     benched = {
-        framework: _trans(True, benchmarks=marks)
+        framework: _trans(True, *marks)
         for framework, marks in _consolidate(benchmarks)
+        if marks
     }
     rendered = await tpl.render_async({"BENCHMARKS": benched})
 
