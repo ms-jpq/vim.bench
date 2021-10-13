@@ -2,7 +2,7 @@ from asyncio import create_subprocess_exec, sleep
 from itertools import chain, repeat
 from os import environ
 from os.path import normcase
-from pathlib import Path
+from pathlib import Path, PurePath
 from subprocess import CalledProcessError
 from tempfile import mkdtemp
 from typing import Iterable, Tuple
@@ -11,19 +11,24 @@ from uuid import uuid4
 from std2.asyncio.subprocess import call
 from std2.timeit import timeit
 
-from .types import Instruction
-
 _SHORT = 0.1
 _LONG = 1
 
 
-async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
+async def tmux(
+    debug: bool,
+    framework: str,
+    test_input: PurePath,
+    lsp_input: PurePath,
+    feed: Iterable[Tuple[float, str]],
+) -> Path:
     tmp = Path(mkdtemp())
     sock, t_out = tmp / str(uuid4()), tmp / str(uuid4())
 
     env = {
-        "TST_FRAMEWORK": inst.framework,
+        "TST_FRAMEWORK": framework,
         "TST_OUTPUT": normcase(t_out),
+        "TST_LSP_INPUT": normcase(lsp_input),
     }
     args = (
         "tmux",
@@ -33,9 +38,9 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
         "new-session",
         "nvim",
         "--",
-        normcase(inst.test_file),
+        normcase(test_input),
     )
-    proc = await create_subprocess_exec(*args, cwd=inst.cwd, env={**environ, **env})
+    proc = await create_subprocess_exec(*args, env={**environ, **env})
 
     await sleep(_LONG)
     while True:
@@ -44,7 +49,7 @@ async def tmux(inst: Instruction, feed: Iterable[Tuple[float, str]]) -> Path:
         else:
             await sleep(0)
 
-    if not inst.debug:
+    if not debug:
         t0 = 0.0
         for delay, chars in chain(zip(repeat(_SHORT), "Go"), feed):
             with timeit() as t:

@@ -1,19 +1,14 @@
 from asyncio import gather, run
 from multiprocessing import cpu_count
-from os.path import sep
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from sys import executable, exit
-from typing import Optional, Sequence
-from urllib.parse import unquote, urlsplit
+from typing import Optional
 
 from std2.asyncio.subprocess import call
 
-from ..parse import specs
-
+_TOP_LEVEL = Path(__file__).resolve().parent
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
 _PACK_OPT = _PACK_HOME / "opt"
-_PACK_START = _PACK_HOME / "start"
-_DATA_LSP = Path(sep) / "data" / "lsp"
 
 
 async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
@@ -31,26 +26,16 @@ async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
     )
 
 
-async def _pack(uri: str, lazy: bool = False, branch: Optional[str] = None) -> None:
-    cwd = _PACK_OPT if lazy else _PACK_START
-    await _git(cwd, uri=uri, branch=branch)
+async def _pack(uri: str, branch: Optional[str] = None) -> None:
+    await _git(_PACK_OPT, uri=uri, branch=branch)
 
 
 async def _lsps() -> None:
-    uri = "https://github.com/neovim/nvim-lspconfig"
-    await gather(
-        _pack(uri),
-        call(
-            "npm",
-            "install",
-            "--global",
-            "--",
-            "typescript",
-            "typescript-language-server",
-            "pyright",
-            capture_stdout=False,
-            capture_stderr=False,
-        ),
+    lsp_init = _TOP_LEVEL.parent / "lsp" / "build.sh"
+    await call(
+        lsp_init,
+        capture_stdout=False,
+        capture_stderr=False,
     )
 
 
@@ -58,17 +43,17 @@ async def _coq() -> None:
     uri = "https://github.com/ms-jpq/coq_nvim"
     await _pack(uri)
     await call(
-        Path(executable).resolve(),
+        Path(executable).resolve(strict=True),
         "-m",
         "coq",
         "deps",
-        cwd=_PACK_START / "coq_nvim",
+        cwd=_PACK_OPT / "coq_nvim",
     )
 
 
 async def _coc() -> None:
     uri = "https://github.com/neoclide/coc.nvim"
-    await _pack(uri, lazy=True, branch="release")
+    await _pack(uri, branch="release")
 
 
 async def _cmp() -> None:
@@ -113,30 +98,13 @@ async def _ncm() -> None:
         "https://github.com/ncm2/ncm2-path",
     }
     await gather(
-        call("python3", "-m", "pip", "install", "--", "pynvim"),
+        call(executable, "-m", "pip", "install", "--", "pynvim"),
         *map(_pack, uris),
     )
 
 
-async def _repos() -> None:
-    repos = specs().repos
-
-    async def cont(git: str, sh: Optional[Sequence[str]]) -> None:
-        await _git(_DATA_LSP, uri=git)
-        if sh:
-            cwd = _DATA_LSP / PurePosixPath(unquote(urlsplit(git).path)).name
-            await call(
-                *sh,
-                cwd=cwd,
-            )
-
-    await gather(*(cont(repo.uri, sh=repo.sh) for repo in repos))
-
-
 async def main() -> int:
-    for path in (_PACK_OPT, _PACK_START, _DATA_LSP):
-        path.mkdir(parents=True, exist_ok=True)
-
+    _PACK_OPT.mkdir(parents=True, exist_ok=True)
     await gather(
         _lsps(),
         _coq(),
@@ -146,7 +114,6 @@ async def main() -> int:
         _comp_nvim(),
         _ddc(),
         _ncm(),
-        _repos(),
     )
 
     return 0

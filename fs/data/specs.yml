@@ -1,34 +1,33 @@
 ---
+typist:
+  samples: 99
+  wpm: 20
+  avg_word_len: 9
+  variance: 0.15
+
 frameworks:
-  - coq
-  - coc
   - cmp
-  - compe
+  - coc
   - comp_nvim
+  - compe
+  - coq
+  - ddc
+  - ncm
 
 tests:
-  - cwd: /data/buffers
+  buffers:
+    - ./buffers/1-short.txt
+    - ./buffers/2-medium.txt
+    - ./buffers/3-long.txt
+  lsp:
+    profiles:
+      - delay: 16
+        rows: 16
+      - delay: 49
+        rows: 888
+      - delay: 0
+        rows: 6666
+
+    cljc: ./lsp/empty.cljc
     files:
-      - src: 1-short.txt
-        tokens: 1-short.txt
-      - src: 2-medium.txt
-        tokens: 2-medium.txt
-      - src: 3-long.txt
-        tokens: 3-long.txt
-
-  - cwd: /data/lsp/coq_nvim
-    files:
-      - src: coq/server/edit.py
-        tokens: coq/server/edit.py
-
-  - cwd: /data/lsp/create-react-app
-    files:
-      - src: packages/create-react-app/createReactApp.js
-        tokens: packages/create-react-app/createReactApp.js
-
-repos:
-  - uri: https://github.com/ms-jpq/coq_nvim
-    sh: []
-
-  - uri: https://github.com/facebook/create-react-app
-    sh: []
+      - ./buffers/2-medium.txt

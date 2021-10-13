@@ -1,13 +1,22 @@
-from hashlib import md5
-from pathlib import PurePath
-from posixpath import normcase
+from base64 import b64encode
+from dataclasses import dataclass
+from io import BytesIO
 from statistics import fmean, stdev
-from typing import Sequence
+from typing import Sequence, Tuple
 
 from seaborn import kdeplot
 from std2.statistics import quantiles
 
-from .types import Instruction, Stats
+
+@dataclass(frozen=True)
+class Stats:
+    items: int
+    mean: float
+    std: float
+    q0: float
+    q50: float
+    q95: float
+    q100: float
 
 
 def stats(sample: Sequence[float]) -> Stats:
@@ -26,10 +35,21 @@ def stats(sample: Sequence[float]) -> Stats:
     return stats
 
 
-def plot(dump_into: PurePath, inst: Instruction, sample: Sequence[float]) -> PurePath:
-    hash_key = inst.framework + normcase(inst.test_file)
-    path = (dump_into / md5(hash_key.encode()).hexdigest()).with_suffix(".png")
-    plot = kdeplot(data=sample)
-    plot.set(xlabel="ms")
-    plot.get_figure().savefig(path)
-    return path
+def b64_plots(title: str, sample: Sequence[float]) -> Tuple[str, str]:
+    pdf_title, cdf_title = f"pdf -- {title}", f"cdf -- {title}"
+    pdf_io, cdf_io = BytesIO(), BytesIO()
+
+    pdf_plot = kdeplot(data=sample)
+    pdf_plot.set(xlabel="ms", title=pdf_title)
+    pdf_plot.get_figure().savefig(pdf_io, format="png")
+
+    cdf_plot = kdeplot(data=sample, cumulative=True)
+    cdf_plot.set(xlabel="ms", title=cdf_title)
+    cdf_plot.get_figure().savefig(cdf_io, format="png")
+
+    pdf_io.seek(0)
+    cdf_io.seek(0)
+
+    pdf = b64encode(pdf_io.read())
+    cdf = b64encode(cdf_io.read())
+    return pdf.decode(), cdf.decode()
