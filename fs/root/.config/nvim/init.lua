@@ -56,10 +56,14 @@ local _ =
   end
 
   TIMER.done = function()
-    vim.validate {mark = {mark, "number"}}
+    local size = vim.v.event.size
+    vim.validate {
+      mark = {mark, "number"},
+      size = {size, "number"}
+    }
+
     local span = (time() - mark) * 1000
-    local info = vim.fn.complete_info {"mode", "items"}
-    if info.mode == "eval" and #info.items > 0 and span > 1 then
+    if size > 0 then
       table.insert(acc, span)
     end
   end
