@@ -6,27 +6,13 @@ end)()
 
 local _ =
   (function()
-  local lsp_cache = vim.env.TST_LSP_CACHE
-  local lsp_input = vim.env.TST_LSP_INPUT
-  vim.validate {
-    lsp_cache = {lsp_cache, "string"},
-    lsp_input = {lsp_input, "string"}
-  }
-
   require("lspconfig/configs").wordbank_ls = {
     default_config = {
-      cmd = {
-        "/code/lsp/run.sh",
-        "--cache",
-        lsp_cache,
-        "--pool",
-        lsp_input
-      },
+      cmd = {"/code/lsp/run.sh"},
       filetypes = {"clojure"},
       root_dir = function()
         return "/"
-      end,
-      settings = {}
+      end
     }
   }
   require("lspconfig").wordbank_ls.setup {}
