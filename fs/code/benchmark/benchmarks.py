@@ -90,33 +90,37 @@ def _token_stream(
     return feed
 
 
-def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruction]:
+def _cartesian(
+    debug: bool, seed: bytes, norm: NormalDist, samples: int
+) -> Iterator[_Instruction]:
     n = 999
     variance = norm.stdev / norm.mean
     spec = specs()
 
-    for framework, filename in product(spec.frameworks, spec.tests.buffers):
-        method = "buf"
-        file = DATA / filename
-        tokens = _naive_tokenize(file)
-        stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
+    if not debug:
+        for framework, filename in product(spec.frameworks, spec.tests.buffers):
+            method = "buf"
+            file = DATA / filename
+            tokens = _naive_tokenize(file)
+            stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
 
-        inst = _Instruction(
-            framework=framework,
-            method=method,
-            file=file,
-            tokens=stream,
-            lsp_cache=False,
-            lsp_feed=(),
-        )
-        yield inst
+            inst = _Instruction(
+                framework=framework,
+                method=method,
+                file=file,
+                tokens=stream,
+                lsp_cache=False,
+                lsp_feed=(),
+            )
+            yield inst
 
     for framework, profile, filename in product(
         spec.frameworks, spec.tests.lsp.profiles, spec.tests.lsp.files
     ):
         method = f"lsp delay={profile.delay} rows={profile.rows}"
-        file = DATA / filename
-        tokens = _naive_tokenize(file)
+        file = DATA / spec.tests.lsp.cljc
+        token_file = DATA / filename
+        tokens = _naive_tokenize(token_file)
         stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
 
         def cont() -> Iterator[_LSProw]:
@@ -150,12 +154,19 @@ async def benchmarks(
     encode = new_encoder[_LSPFeed](_LSPFeed)
 
     seed = uuid4().bytes
-    for inst in _cartesian(seed, norm=norm, samples=samples):
+    for inst in _cartesian(debug, seed=seed, norm=norm, samples=samples):
         json = encode(inst.lsp_feed)
 
-        with NamedTemporaryFile(mode="w", delete=False) as fd:
+        with NamedTemporaryFile(mode="w", suffix=".json", delete=False) as fd:
             lsp_input = PurePath(fd.name)
-            dump(json, fd, check_circular=False, ensure_ascii=False)
+            dump(
+                json,
+                fd,
+                check_circular=False,
+                ensure_ascii=False,
+                allow_nan=False,
+                indent=2,
+            )
 
         out = await tmux(
             debug,
