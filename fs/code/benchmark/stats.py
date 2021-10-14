@@ -31,10 +31,10 @@ def stats(sample: Sequence[float]) -> Stats:
         items=len(sample),
         mean=mean,
         std=std,
-        q0=quads[0],
-        q50=quads[50],
-        q95=quads[95],
-        q100=quads[100],
+        q0=quads.get(0, 0),
+        q50=quads.get(50, 0),
+        q95=quads.get(95, 0),
+        q100=quads.get(100, 0),
     )
     return stats
 
