@@ -42,10 +42,12 @@ def b64_plots(title: str, sample: Sequence[float]) -> Tuple[str, str]:
     pdf_plot = kdeplot(data=sample, cumulative=False)
     pdf_plot.set(xlabel="ms", title=pdf_title)
     pdf_plot.get_figure().savefig(pdf_io, format="png")
+    pdf_plot.clf()
 
     cdf_plot = kdeplot(data=sample, cumulative=True)
     cdf_plot.set(xlabel="ms", title=cdf_title)
     cdf_plot.get_figure().savefig(cdf_io, format="png")
+    cdf_plot.clf()
 
     pdf_io.seek(0)
     cdf_io.seek(0)
