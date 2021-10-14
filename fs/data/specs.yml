@@ -15,10 +15,6 @@ frameworks:
   - ncm
 
 tests:
-  buffers:
-    - ./buffers/1-short.txt
-    - ./buffers/2-medium.txt
-    - ./buffers/3-long.txt
   lsp:
     profiles:
       - cache: true
@@ -30,7 +26,3 @@ tests:
       - cache: true
         delay: 0
         rows: 6666
-
-    cljc: ./lsp/empty.cljc
-    files:
-      - ./buffers/2-medium.txt

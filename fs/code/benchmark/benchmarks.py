@@ -5,6 +5,7 @@ from json import dump, loads
 from os import linesep
 from pathlib import Path, PurePath
 from random import Random
+from shutil import copy2
 from statistics import NormalDist
 from tempfile import NamedTemporaryFile
 from typing import AsyncIterator, Iterator, MutableSequence, Sequence, Tuple
@@ -96,32 +97,34 @@ def _cartesian(
     n = 999
     variance = norm.stdev / norm.mean
     spec = specs()
+    txts = DATA.glob("*.txt")
 
     if not debug:
-        for framework, filename in product(spec.frameworks, spec.tests.buffers):
+        for framework, txt in product(spec.frameworks, txts):
             method = "buf"
-            file = DATA / filename
-            tokens = _naive_tokenize(file)
+            tokens = _naive_tokenize(txt)
             stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
 
             inst = _Instruction(
                 framework=framework,
                 method=method,
-                file=file,
+                file=txt,
                 tokens=stream,
                 lsp_cache=False,
                 lsp_feed=(),
             )
             yield inst
 
-    for framework, profile, filename in product(
-        spec.frameworks, spec.tests.lsp.profiles, spec.tests.lsp.files
+    for framework, profile, txt in product(
+        spec.frameworks, spec.tests.lsp.profiles, txts
     ):
         method = f"lsp delay={profile.delay} rows={profile.rows}"
-        file = DATA / spec.tests.lsp.cljc
-        token_file = DATA / filename
-        tokens = _naive_tokenize(token_file)
+        tokens = _naive_tokenize(txt)
         stream = _token_stream(seed, norm=norm, samples=samples, tokenized=tokens)
+
+        with NamedTemporaryFile(mode="w", suffix=".cljc", delete=False) as fd:
+            cljc = PurePath(fd.name)
+        copy2(txt, cljc)
 
         def cont() -> Iterator[_LSProw]:
             rand = Random(seed)
@@ -132,14 +135,15 @@ def _cartesian(
                 norm_delay.samples(n, seed=seed),
                 map(round, norm_samples.samples(n, seed=seed)),
             ):
-                words = rand.sample(tokens.tot, k=wcount)
+                k = min(len(tokens.tot), wcount)
+                words = rand.sample(tokens.tot, k=k)
                 row = _LSProw(delay=delay, words=words)
                 yield row
 
         inst = _Instruction(
             framework=framework,
             method=method,
-            file=file,
+            file=cljc,
             tokens=stream,
             lsp_cache=profile.cache,
             lsp_feed=tuple(cont()),

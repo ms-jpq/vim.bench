@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import PurePath
 from typing import AbstractSet
 
 from std2.pickle.decoder import new_decoder
@@ -27,13 +26,10 @@ class _Profile:
 @dataclass(frozen=True)
 class _Lsp:
     profiles: AbstractSet[_Profile]
-    cljc: PurePath
-    files: AbstractSet[PurePath]
 
 
 @dataclass(frozen=True)
 class _Tests:
-    buffers: AbstractSet[PurePath]
     lsp: _Lsp
 
 
