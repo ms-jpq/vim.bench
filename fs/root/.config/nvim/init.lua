@@ -21,20 +21,13 @@ end)()
 
 local _ =
   (function()
-  local input = vim.env.TST_INPUT
   local framework = vim.env.TST_FRAMEWORK
   vim.validate {
-    input = {input, "string"},
     framework = {framework, "string"}
   }
 
   require("tst_" .. framework)
-  vim.schedule(
-    function()
-      vim.cmd("edit " .. vim.fn.fnameescape(input))
-      print(">>>" .. framework .. "<<<")
-    end
-  )
+  print(">>>" .. framework .. "<<<")
 end)()
 
 local _ =
