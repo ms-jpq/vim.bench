@@ -9,4 +9,5 @@ vim.g.completion_chain_complete_list = {
     }
   }
 }
+
 require("completion").on_attach()
