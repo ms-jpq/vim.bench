@@ -4,6 +4,7 @@ from io import BytesIO
 from statistics import fmean, stdev
 from typing import Sequence, Tuple
 
+from matplotlib.pyplot import figure
 from seaborn import kdeplot
 from std2.statistics import quantiles
 
@@ -39,15 +40,15 @@ def b64_plots(title: str, sample: Sequence[float]) -> Tuple[str, str]:
     pdf_title, cdf_title = f"pdf -- {title}", f"cdf -- {title}"
     pdf_io, cdf_io = BytesIO(), BytesIO()
 
+    figure()
     pdf_plot = kdeplot(data=sample, cumulative=False)
     pdf_plot.set(xlabel="ms", title=pdf_title)
     pdf_plot.get_figure().savefig(pdf_io, format="png")
-    pdf_plot.clf()
 
+    figure()
     cdf_plot = kdeplot(data=sample, cumulative=True)
     cdf_plot.set(xlabel="ms", title=cdf_title)
     cdf_plot.get_figure().savefig(cdf_io, format="png")
-    cdf_plot.clf()
 
     pdf_io.seek(0)
     cdf_io.seek(0)
