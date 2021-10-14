@@ -8,6 +8,7 @@ import {
 import { stdin, stdout } from "process";
 
 import { Command } from "commander";
+import { notEqual } from "assert";
 import { readFile } from "fs/promises";
 import { setTimeout } from "timers/promises";
 
@@ -66,20 +67,19 @@ const parse_args = () =>
     const cmd = new Command();
     cmd.allowExcessArguments(false);
 
-    cmd.option("--cache");
+    cmd.option("--cache <cache>");
     cmd.requiredOption("--pool <pool>");
 
-    cmd.action(({ cache: use_cache, pool: pool_path }) => {
+    cmd.action(({ cache, pool: pool_path }) => {
+      const ca = parseInt(cache);
+      notEqual(ca, NaN);
+      const use_cache = Boolean(ca);
       resolve({ use_cache, pool_path });
     });
     cmd.parse();
   });
 
-const main = async () => {
-  const { use_cache, pool_path } = await parse_args();
-  const json = await readFile(pool_path, { encoding: "utf-8" });
-  const pool = JSON.parse(json);
-  gen({ use_cache, pool });
-};
-
-main();
+const { use_cache, pool_path } = await parse_args();
+const json = await readFile(pool_path, { encoding: "utf-8" });
+const pool = JSON.parse(json);
+gen({ use_cache, pool });

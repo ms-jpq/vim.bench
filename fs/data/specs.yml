@@ -21,11 +21,14 @@ tests:
     - ./buffers/3-long.txt
   lsp:
     profiles:
-      - delay: 16
+      - cache: true
+        delay: 16
         rows: 16
-      - delay: 49
+      - cache: true
+        delay: 49
         rows: 888
-      - delay: 0
+      - cache: true
+        delay: 0
         rows: 6666
 
     cljc: ./lsp/empty.cljc

@@ -8,5 +8,6 @@
     "@types/node": "*",
     "typescript": "*"
   },
-  "name": "vim.bench"
+  "name": "vim.bench",
+  "type": "module"
 }

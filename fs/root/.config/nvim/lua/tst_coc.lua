@@ -1,5 +1,7 @@
-vim.schedule(
-  function()
-    vim.cmd [[packadd coc.nvim]]
+return {
+  deps = {
+    "coc.nvim"
+  },
+  setup = function()
   end
-)
+}
