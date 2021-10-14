@@ -39,7 +39,7 @@ def b64_plots(title: str, sample: Sequence[float]) -> Tuple[str, str]:
     pdf_title, cdf_title = f"pdf -- {title}", f"cdf -- {title}"
     pdf_io, cdf_io = BytesIO(), BytesIO()
 
-    pdf_plot = kdeplot(data=sample)
+    pdf_plot = kdeplot(data=sample, cumulative=False)
     pdf_plot.set(xlabel="ms", title=pdf_title)
     pdf_plot.get_figure().savefig(pdf_io, format="png")
 
