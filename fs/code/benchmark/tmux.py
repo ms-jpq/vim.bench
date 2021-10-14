@@ -28,20 +28,12 @@ async def tmux(
 
     env = {
         "TST_FRAMEWORK": framework,
+        "TST_INPUT": normcase(test_input),
         "TST_LSP_CACHE": str(int(lsp_cache)),
-        "TST_OUTPUT": normcase(t_out),
         "TST_LSP_INPUT": normcase(lsp_input),
+        "TST_OUTPUT": normcase(t_out),
     }
-    args = (
-        "tmux",
-        "-S",
-        sock,
-        "--",
-        "new-session",
-        "nvim",
-        "--",
-        normcase(test_input),
-    )
+    args = ("tmux", "-S", sock, "--", "new-session", "nvim")
     proc = await create_subprocess_exec(*args, env={**environ, **env})
 
     await sleep(_LONG)

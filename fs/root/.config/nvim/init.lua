@@ -21,9 +21,12 @@ end)()
 
 local _ =
   (function()
+  local input = vim.env.TST_INPUT
   local framework = vim.env.TST_FRAMEWORK
-  vim.validate {framework = {framework, "string"}}
-  print(">>>" .. framework .. "<<<")
+  vim.validate {
+    input = {input, "string"},
+    framework = {framework, "string"}
+  }
 
   local spec = require("tst_" .. framework)
   vim.validate {
@@ -41,6 +44,8 @@ local _ =
         vim.cmd("packadd " .. val)
       end
       vim.schedule(spec.setup)
+      vim.cmd("edit " .. vim.fn.fnameescape(input))
+      print(">>>" .. framework .. "<<<")
     end
   )
 end)()
