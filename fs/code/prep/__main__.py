@@ -103,6 +103,8 @@ async def _ddc() -> None:
         "https://github.com/vim-denops/denops.vim",
         "https://github.com/Shougo/ddc.vim",
         "https://github.com/Shougo/ddc-around",
+        "https://github.com/Shougo/ddc-nvim-lsp",
+        "https://github.com/LumaKernel/ddc-file",
         "https://github.com/Shougo/ddc-matcher_head",
         "https://github.com/Shougo/ddc-sorter_rank",
     }
