@@ -2,6 +2,7 @@ local _ = (function()
   vim.opt.showmode = false
   vim.opt.completeopt = {"noselect", "noinsert", "menuone"}
   vim.opt.shortmess:append("c")
+  vim.opt.timeoutlen = 500
 end)()
 
 local _ =
