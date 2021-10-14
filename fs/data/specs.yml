@@ -8,11 +8,11 @@ typist:
 frameworks:
   - cmp
   - coc
-  - comp_nvim
+  # - comp_nvim
   - compe
   - coq
   - ddc
-  - ncm
+  # - ncm
 
 tests:
   lsp:

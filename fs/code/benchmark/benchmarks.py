@@ -97,7 +97,7 @@ def _cartesian(
     n = 999
     variance = norm.stdev / norm.mean
     spec = specs()
-    txts = DATA.glob("*.txt")
+    txts = {*DATA.glob("*.txt")}
 
     if not debug:
         for framework, txt in product(spec.frameworks, txts):
