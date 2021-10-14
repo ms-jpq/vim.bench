@@ -19,6 +19,7 @@ async def tmux(
     debug: bool,
     framework: str,
     test_input: PurePath,
+    lsp_cache: bool,
     lsp_input: PurePath,
     feed: Iterable[Tuple[float, str]],
 ) -> Path:
@@ -27,6 +28,7 @@ async def tmux(
 
     env = {
         "TST_FRAMEWORK": framework,
+        "TST_LSP_CACHE": str(int(lsp_cache)),
         "TST_OUTPUT": normcase(t_out),
         "TST_LSP_INPUT": normcase(lsp_input),
     }

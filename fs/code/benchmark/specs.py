@@ -19,6 +19,7 @@ class _Typist:
 
 @dataclass(frozen=True)
 class _Profile:
+    cache: bool
     delay: float
     rows: int
 

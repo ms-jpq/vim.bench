@@ -40,6 +40,7 @@ class _Instruction:
     method: str
     file: PurePath
     tokens: Iterator[Tuple[float, str]]
+    lsp_cache: bool
     lsp_feed: _LSPFeed
 
 
@@ -105,6 +106,7 @@ def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruc
             method=method,
             file=file,
             tokens=stream,
+            lsp_cache=False,
             lsp_feed=(),
         )
         yield inst
@@ -135,6 +137,7 @@ def _cartesian(seed: bytes, norm: NormalDist, samples: int) -> Iterator[_Instruc
             method=method,
             file=file,
             tokens=stream,
+            lsp_cache=profile.cache,
             lsp_feed=tuple(cont()),
         )
         yield inst
@@ -158,6 +161,7 @@ async def benchmarks(
             debug,
             framework=inst.framework,
             test_input=inst.file,
+            lsp_cache=inst.lsp_cache,
             lsp_input=lsp_input,
             feed=inst.tokens,
         )
