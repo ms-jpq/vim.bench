@@ -43,8 +43,16 @@ local _ =
         }
         vim.cmd("packadd " .. val)
       end
-      vim.schedule(spec.setup)
-      vim.cmd("edit " .. vim.fn.fnameescape(input))
+      vim.schedule(
+        function()
+          spec.setup()
+          vim.schedule(
+            function()
+              vim.cmd("edit " .. vim.fn.fnameescape(input))
+            end
+          )
+        end
+      )
       print(">>>" .. framework .. "<<<")
     end
   )
