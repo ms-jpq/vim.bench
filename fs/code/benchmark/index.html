@@ -18,40 +18,64 @@
         conclusions
       </p>
       <hr />
-      {% for benchmark in benchmarks %}
-      <hr />
+      {% for framework, benchmark in BENCHMARKS.items() %}
       <section>
-        <h2>{{ benchmark.framework | e }}</h2>
+        <h2>{{ framework | e }}</h2>
         <table>
-          <tr>
-            <th>Key</th>
-            <th>Val</th>
-          </tr>
-          <tr>
-            {% for key, val in benchmarks.stats.items() %}
-            <td>{{ key | e }}</td>
-            <td>{{ val | e }}</td>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Val</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, val in asdict(benchmark.stats).items() %}
+            <tr>
+              <td>{{ key | e }}</td>
+              <td>{{ val | e }}</td>
+            </tr>
             {% endfor %}
-          </tr>
+          </tbody>
         </table>
-        <img alt="pdf.img" src="{{ benchmark.pdf }}" />
+        <img
+          alt="pdf.img"
+          src="data:image/png;base64, {{ benchmark.b64_pdf }}"
+        />
+        <img
+          alt="cdf.img"
+          src="data:image/png;base64, {{ benchmark.b64_cdf }}"
+        />
         <details>
-          {% for name, benchmark in benchmarks.items() %}
+          {% for detail in benchmark.details %}
           <summary><b>details</b></summary>
-          <tr>
-            <th>Key</th>
-            <th>Val</th>
-          </tr>
-          <tr>
-            {% for key, val in benchmarks.stats.items() %}
-            <td>{{ key | e }}</td>
-            <td>{{ val | e }}</td>
-            {% endfor %}
-          </tr>
-          <img alt="pdf.img" src="{{ benchmark.pdf }}" />
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Val</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, val in asdict(detail.stats).items() %}
+              <tr>
+                <td>{{ key | e }}</td>
+                <td>{{ val | e }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <img
+            alt="pdf.img"
+            src="data:image/png;base64, {{ detail.b64_pdf }}"
+          />
+          <img
+            alt="cdf.img"
+            src="data:image/png;base64, {{ detail.b64_cdf }}"
+          />
           {% endfor %}
         </details>
       </section>
+      <hr />
       {% endfor %}
     </main>
   </body>

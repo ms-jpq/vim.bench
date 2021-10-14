@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from itertools import chain
 from locale import strxfrm
 from os.path import normcase
@@ -66,13 +66,15 @@ async def dump(benchmarks: Sequence[Benchmark]) -> None:
         undefined=StrictUndefined,
         loader=FileSystemLoader(_TOP_LEVEL, followlinks=True),
     )
-    tpl = j2.get_template("index.html")
+    j2.globals = {asdict.__qualname__: asdict, **j2.globals}
 
     benched = {
         framework: _trans(True, *marks)
         for framework, marks in _consolidate(benchmarks)
         if marks
     }
+
+    tpl = j2.get_template("index.html")
     rendered = await tpl.render_async({"BENCHMARKS": benched})
 
     (DUMP / "index.html").write_text(rendered)
