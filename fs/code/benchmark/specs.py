@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import AbstractSet
+from typing import AbstractSet, Sequence
 
 from std2.pickle.decoder import new_decoder
 from yaml import safe_load
@@ -25,7 +25,7 @@ class _Profile:
 
 @dataclass(frozen=True)
 class _Lsp:
-    profiles: AbstractSet[_Profile]
+    profiles: Sequence[_Profile]
 
 
 @dataclass(frozen=True)
