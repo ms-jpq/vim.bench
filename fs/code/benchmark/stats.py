@@ -1,7 +1,7 @@
 from base64 import b64encode
 from dataclasses import dataclass
 from io import BytesIO
-from statistics import fmean, stdev
+from statistics import StatisticsError, fmean, stdev
 from typing import Sequence, Tuple
 
 from matplotlib.pyplot import figure
@@ -21,7 +21,10 @@ class Stats:
 
 
 def stats(sample: Sequence[float]) -> Stats:
-    mean, std = round(fmean(sample)), round(stdev(sample))
+    try:
+        mean, std = round(fmean(sample)), round(stdev(sample))
+    except StatisticsError:
+        mean, std = 0, 0
     quads = {key: round(val) for key, val in quantiles(sample, 0, 50, 95, 100).items()}
 
     stats = Stats(
