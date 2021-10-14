@@ -30,7 +30,7 @@ const gen = ({
           for (const word of words) {
             const item: CompletionItem = {
               label: word,
-              kind: CompletionItemKind.Unit,
+              kind: CompletionItemKind.Color,
               documentation: { kind: "markdown", value: word },
               deprecated: false,
               preselect: false,
