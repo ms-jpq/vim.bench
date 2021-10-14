@@ -12,7 +12,9 @@ vim.fn["ddc#custom#patch_global"](
     _ = {
       matchers = {"matcher_head"},
       sorters = {"sorter_rank"}
-    }
+    },
+    around = {mark = "buf"},
+    ["nvim-lsp"] = {mark = "lsp"}
   }
 )
 
