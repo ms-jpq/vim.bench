@@ -4,7 +4,7 @@ import {
   InsertTextFormat,
   InsertTextMode,
   createConnection,
-} from "vscode-languageserver/node";
+} from "vscode-languageserver/node.js";
 import { env, stdin, stdout } from "process";
 import { notEqual, ok } from "assert";
 
