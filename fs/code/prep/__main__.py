@@ -8,6 +8,7 @@ from std2.asyncio.subprocess import call
 
 _TOP_LEVEL = Path(__file__).resolve().parent
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
+_PACK_START = _PACK_HOME / "start"
 _PACK_OPT = _PACK_HOME / "opt"
 
 
@@ -31,11 +32,16 @@ async def _pack(uri: str, branch: Optional[str] = None) -> None:
 
 
 async def _lsps() -> None:
+    _PACK_START.mkdir(parents=True, exist_ok=True)
+    uri = "https://github.com/neovim/nvim-lspconfig"
     lsp_init = _TOP_LEVEL.parent / "lsp" / "build.sh"
-    await call(
-        lsp_init,
-        capture_stdout=False,
-        capture_stderr=False,
+    await gather(
+        _git(_PACK_START, uri=uri),
+        call(
+            lsp_init,
+            capture_stdout=False,
+            capture_stderr=False,
+        ),
     )
 
 

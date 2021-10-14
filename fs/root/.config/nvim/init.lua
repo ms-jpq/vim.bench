@@ -13,8 +13,7 @@ local _ =
     lsp_input = {lsp_input, "string"}
   }
 
-  local lsp = require("lspconfig")
-  lspconfig.configs.wordbank_ls = {
+  require("lspconfig/configs").wordbank_ls = {
     default_config = {
       cmd = {
         "/code/lsp/run.sh",
@@ -30,7 +29,7 @@ local _ =
       settings = {}
     }
   }
-  lsp.wordbank_ls.setup {}
+  require("lspconfig").wordbank_ls.setup {}
 end)()
 
 local _ =
