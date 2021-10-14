@@ -15,3 +15,5 @@ vim.fn["ddc#custom#patch_global"](
     }
   }
 )
+
+vim.schedule(vim.fn["ddc#enable"])
