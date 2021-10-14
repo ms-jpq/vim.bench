@@ -1,5 +1,6 @@
 from asyncio import gather, run
 from multiprocessing import cpu_count
+from os import sep
 from pathlib import Path
 from sys import executable, exit
 from typing import Optional
@@ -9,7 +10,7 @@ from std2.asyncio.subprocess import call
 _TOP_LEVEL = Path(__file__).resolve().parent
 _PACK_HOME = Path().home() / ".config" / "nvim" / "pack" / "modules"
 _PACK_START = _PACK_HOME / "start"
-_PACK_OPT = _PACK_HOME / "opt"
+_PACK_OPT = Path(sep) / "srv"
 
 
 async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
@@ -27,8 +28,10 @@ async def _git(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
     )
 
 
-async def _pack(uri: str, branch: Optional[str] = None) -> None:
-    await _git(_PACK_OPT, uri=uri, branch=branch)
+async def _pack(cwd: Path, uri: str, branch: Optional[str] = None) -> None:
+    cwd.mkdir(parents=True, exist_ok=True)
+
+    await _git(cwd, uri=uri, branch=branch)
 
 
 async def _lsps() -> None:
@@ -47,19 +50,23 @@ async def _lsps() -> None:
 
 async def _coq() -> None:
     uri = "https://github.com/ms-jpq/coq_nvim"
-    await _pack(uri)
+    cwd = _PACK_OPT / "coq"
+
+    await _pack(cwd, uri=uri)
     await call(
         Path(executable).resolve(strict=True),
         "-m",
         "coq",
         "deps",
-        cwd=_PACK_OPT / "coq_nvim",
+        cwd=cwd / "coq_nvim",
     )
 
 
 async def _coc() -> None:
     uri = "https://github.com/neoclide/coc.nvim"
-    await _pack(uri, branch="release")
+    cwd = _PACK_OPT / "coc"
+
+    await _pack(cwd, uri, branch="release")
 
 
 async def _cmp() -> None:
@@ -69,12 +76,16 @@ async def _cmp() -> None:
         "https://github.com/hrsh7th/cmp-nvim-lsp",
         "https://github.com/hrsh7th/cmp-path",
     }
-    await gather(*map(_pack, uris))
+    cwd = _PACK_OPT / "cmp"
+
+    await gather(*(_pack(cwd, uri=uri) for uri in uris))
 
 
 async def _compe() -> None:
     uri = "https://github.com/hrsh7th/nvim-compe"
-    await _pack(uri)
+    cwd = _PACK_OPT / "compe"
+
+    await _pack(cwd, uri=uri)
 
 
 async def _comp_nvim() -> None:
@@ -82,7 +93,9 @@ async def _comp_nvim() -> None:
         "https://github.com/nvim-lua/completion-nvim",
         "https://github.com/steelsojka/completion-buffers",
     }
-    await gather(*map(_pack, uris))
+    cwd = _PACK_OPT / "comp_nvim"
+
+    await gather(*(_pack(cwd, uri=uri) for uri in uris))
 
 
 async def _ddc() -> None:
@@ -93,7 +106,9 @@ async def _ddc() -> None:
         "https://github.com/Shougo/ddc-matcher_head",
         "https://github.com/Shougo/ddc-sorter_rank",
     }
-    await gather(*map(_pack, uris))
+    cwd = _PACK_OPT / "ddc"
+
+    await gather(*(_pack(cwd, uri=uri) for uri in uris))
 
 
 async def _ncm() -> None:
@@ -103,14 +118,15 @@ async def _ncm() -> None:
         "https://github.com/ncm2/ncm2-bufword",
         "https://github.com/ncm2/ncm2-path",
     }
+    cwd = _PACK_OPT / "ncm"
+
     await gather(
         call(executable, "-m", "pip", "install", "--", "pynvim"),
-        *map(_pack, uris),
+        *(_pack(cwd, uri=uri) for uri in uris),
     )
 
 
 async def main() -> int:
-    _PACK_OPT.mkdir(parents=True, exist_ok=True)
     await gather(
         _lsps(),
         _coq(),

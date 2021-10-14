@@ -1,6 +1,6 @@
 from asyncio import create_subprocess_exec, sleep
 from itertools import chain, repeat
-from os import environ
+from os import environ, sep
 from os.path import normcase
 from pathlib import Path, PurePath
 from subprocess import CalledProcessError
@@ -10,6 +10,9 @@ from uuid import uuid4
 
 from std2.asyncio.subprocess import call
 from std2.timeit import timeit
+
+_SRV = Path(sep) / "srv"
+_FRAMEWORKS = Path.home() / ".config" / "nvim" / "pack" / "frameworks"
 
 _SHORT = 0.1
 _LONG = 1
@@ -25,6 +28,8 @@ async def tmux(
 ) -> Path:
     tmp = Path(mkdtemp())
     sock, t_out = tmp / str(uuid4()), tmp / str(uuid4())
+    ln = _FRAMEWORKS / framework
+    ln.symlink_to(_SRV / framework)
 
     env = {
         "TST_FRAMEWORK": framework,
@@ -89,4 +94,5 @@ async def tmux(
     if (code := await proc.wait()) != 0:
         raise CalledProcessError(returncode=code, cmd=args)
     else:
+        ln.unlink()
         return t_out

@@ -28,31 +28,10 @@ local _ =
     framework = {framework, "string"}
   }
 
-  local spec = require("tst_" .. framework)
-  vim.validate {
-    deps = {spec.deps, "table"},
-    setup = {spec.setup, "function"}
-  }
-
+  require("tst_" .. framework)
   vim.schedule(
     function()
-      for key, val in pairs(spec.deps) do
-        vim.validate {
-          key = {key, "number"},
-          val = {val, "string"}
-        }
-        vim.cmd("packadd " .. val)
-      end
-      vim.schedule(
-        function()
-          spec.setup()
-          vim.schedule(
-            function()
-              vim.cmd("edit " .. vim.fn.fnameescape(input))
-            end
-          )
-        end
-      )
+      vim.cmd("edit " .. vim.fn.fnameescape(input))
       print(">>>" .. framework .. "<<<")
     end
   )
