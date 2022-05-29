@@ -1,9 +1,13 @@
+vim.g.completion_confirm_key = "<cr>"
+vim.g.completion_disable_filetypes = {}
 vim.g.completion_chain_complete_list = {
-  {complete_items = {"lsp", "buffers", "path"}}
+  {
+    complete_items = {
+      "lsp",
+      "buffers",
+      "path"
+    }
+  }
 }
 
-vim.schedule(
-  function()
-    require("completion").on_attach()
-  end
-)
+require("completion").on_attach()

@@ -1,1 +1,8 @@
-{}
+{
+  "languageserver": {
+    "wordbank_ls": {
+      "command": "/code/lsp/run.sh",
+      "filetypes": ["clojure"]
+    }
+  }
+}

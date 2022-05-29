@@ -1,0 +1,26 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "jsx": "react",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "newLine": "LF",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true
+  },
+  "include": ["*.ts", "**/*.ts"]
+}

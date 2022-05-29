@@ -20,7 +20,7 @@ RUN apt update && \
 
 
 RUN curl -fsSL https://deno.land/x/install/install.sh | sh
-ENV PATH="/root/.deno:$PATH"
+ENV PATH="/root/.deno/bin:$PATH"
 
 
 RUN python3 -m venv /venv
@@ -30,10 +30,13 @@ ENV PATH="/venv/bin:$PATH" \
 
 WORKDIR /
 COPY ./fs/code/requirements.txt /code/
+COPY ./fs/code/__init__.py /code/
 RUN pip3 install --no-cache-dir --requirement /code/requirements.txt
-COPY ./fs /
+COPY ./fs/code/prep /code/prep
+COPY ./fs/code/lsp /code/lsp
 RUN python3 -m code.prep
 
 
+COPY ./fs /
 VOLUME [ "/dump" ]
 ENTRYPOINT [ "python3", "-m", "code.benchmark" ]

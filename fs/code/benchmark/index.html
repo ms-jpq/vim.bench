@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vim.Bench</title>
+  </head>
+  <body>
+    <main>
+      <h1>Vim.Bench</h1>
+      <p>
+        <b>Important!</b> Please see
+        <a href="">experimental design &amp analysis</a> for how to interpret
+        these statistics.
+      </p>
+      <p>
+        Without <i>context</i>, these numbers are insufficient to draw
+        conclusions
+      </p>
+      <hr />
+      {% for framework, benchmark in BENCHMARKS.items() %}
+      <section>
+        <h2>{{ framework | e }}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Val</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, val in asdict(benchmark.stats).items() %}
+            <tr>
+              <td>{{ key | e }}</td>
+              <td>{{ val | e }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <img
+          alt="pdf.img"
+          src="data:image/png;base64, {{ benchmark.b64_pdf }}"
+        />
+        <img
+          alt="cdf.img"
+          src="data:image/png;base64, {{ benchmark.b64_cdf }}"
+        />
+        <details>
+          {% for detail in benchmark.details %}
+          <summary><b>details</b></summary>
+          <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Val</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, val in asdict(detail.stats).items() %}
+              <tr>
+                <td>{{ key | e }}</td>
+                <td>{{ val | e }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <img
+            alt="pdf.img"
+            src="data:image/png;base64, {{ detail.b64_pdf }}"
+          />
+          <img
+            alt="cdf.img"
+            src="data:image/png;base64, {{ detail.b64_cdf }}"
+          />
+          {% endfor %}
+        </details>
+      </section>
+      <hr />
+      {% endfor %}
+    </main>
+  </body>
+</html>
