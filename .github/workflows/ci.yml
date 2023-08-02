@@ -3,8 +3,6 @@ name: CI
 
 on:
   push:
-  schedule:
-    - cron: "0 0 * * *" # daily
 
 jobs:
   mypy:
@@ -12,16 +10,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
-
-      - name: Pip Packages
-        run: pip install -r ./fs/code/requirements.txt -- mypy types-PyYAML
-
-      - name: Lint
-        run: mypy -- .
-
-      - name: Test
-        run: docker buildx build -- .
+        uses: actions/setup-python@v3

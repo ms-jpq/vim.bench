@@ -1,5 +1,13 @@
 # Nvim.Bench
 
+# This is flawed
+
+I realized after some time that this repo as it is just a bad way of measuring speed because well, not everybody uses the same API. Especially with some frameworks switching to their own completion besides the vim native one.
+
+I don't have the time & energy to make a nice benchmark for now. So this repo is on hold.
+
+---
+
 Reproducible nvim completion framework benchmarks.
 
 Runs inside Docker. Fair and balanced
