@@ -1,24 +1,28 @@
 ---
+typist:
+  samples: 99
+  wpm: 20
+  avg_word_len: 9
+  variance: 0.15
+
 frameworks:
-  - coq
-  - coc
   - cmp
+  - coc
+  # - comp_nvim
   - compe
-  - comp_nvim
+  - coq
+  - ddc
+  # - ncm
 
 tests:
-  - cwd: /data/buffers
-    files:
-      - 1-short.txt
-      - 2-medium.txt
-      - 3-long.txt
-  - cwd: /data/lsp/coq_nvim
-    files:
-      - coq/server/edit.py
-  - cwd: /data/lsp/create-react-app
-    files:
-      - packages/create-react-app/createReactApp.js
-
-repos:
-  - uri: https://github.com/ms-jpq/coq_nvim
-  - uri: https://github.com/facebook/create-react-app
+  lsp:
+    profiles:
+      - cache: true
+        delay: 16
+        rows: 16
+      - cache: true
+        delay: 49
+        rows: 888
+      # - cache: true
+      #   delay: 36
+      #   rows: 6666

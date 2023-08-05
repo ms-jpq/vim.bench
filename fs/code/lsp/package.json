@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "vscode-languageserver": "^7.0.0"
+  },
+  "description": "",
+  "devDependencies": {
+    "@types/node": "*",
+    "typescript": "*"
+  },
+  "name": "vim.bench",
+  "type": "module"
+}
